@@ -252,7 +252,7 @@ color: #1C65F3;
 `
 
 
-export default function TestPage({hideCategory}) {
+export default function TestPage() {
 
 
     return (

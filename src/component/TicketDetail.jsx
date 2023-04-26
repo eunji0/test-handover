@@ -4,7 +4,7 @@ import ModalBtnSrc from "../svg/ModalBtn.svg";
 import { useParams } from 'react-router-dom';
 import { getTicketById } from '../categoryDummy';
 import selectedHeart from "../svg/HeartSelect.svg";
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const Box = styled.div`
 display: flex;

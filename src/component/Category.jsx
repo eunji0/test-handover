@@ -8,7 +8,6 @@ import { useLocation } from 'react-router-dom';
 import { searchResultsState } from '../atoms/atoms';
 import { useRecoilState } from 'recoil';
 import categoryDummy from "../categoryDummy";
-import { selectedButtonState } from '../atoms/atoms';
 
 const All = styled.div`
 position: relative;
@@ -86,10 +85,9 @@ export default function Category() {
   ];
 
   // 기본값으로 null로 설정
-  // const [selectedButton, setSelectedButton] = useState(
-  //   parseInt(localStorage.getItem('selectedButton')) || null
-  // );
-  const [selectedButton, setSelectedButton] = useRecoilState(selectedButtonState);
+  const [selectedButton, setSelectedButton] = useState(
+    parseInt(localStorage.getItem('selectedButton')) || null
+  );
 
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');

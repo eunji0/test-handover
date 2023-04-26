@@ -7,7 +7,7 @@ export const searchResultsState = atom({
   default: [],
 });
 
-export const selectedButtonState = atom({
-  key: 'selectedButtonState',
-  default: parseInt(localStorage.getItem('selectedButton')) || null,
-});
+// export const selectedButtonState = atom({
+//   key: 'selectedButtonState',
+//   default: parseInt(localStorage.getItem('selectedButton')) || null,
+// });

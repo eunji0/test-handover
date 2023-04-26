@@ -8,9 +8,9 @@ import EtcPage from "./pages/EtcPage";
 import HotelPage from "./pages/HotelPage";
 import ShowPage from "./pages/ShowPage";
 import MainPage from "./pages/MainPage";
-import TestPage from "./pages/TestPage";
 import DetailTicketPage from "./pages/DetailTicketPage";
 import ScrollToTop from "./component/ScrollToTop";
+import FavoriteTicket from "./pages/FavoriteTicket";
 
 function App() {
   return (
@@ -28,7 +28,7 @@ function App() {
             <Route path="/show" element={<ShowPage/>} />
             <Route path="/all/detailticket/:ticket_id" element={<DetailTicketPage />} />
           </Route>
-          <Route path="/favorite" element={<TestPage />} />
+          <Route path="/favorite" element={<FavoriteTicket />} />
         </Routes>
       </BrowserRouter>
     </div>
