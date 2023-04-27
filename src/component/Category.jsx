@@ -35,7 +35,7 @@ background: ${(props) => props.background || "#FFFFFF"};
 border: 1px solid #1C65F3;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 40px;
-width: 91px;
+/* width: 91px; */
 height: 39px;
 `
 

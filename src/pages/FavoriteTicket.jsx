@@ -113,7 +113,6 @@ gap: 10px;
 `
 
 const SellBox = styled.div`
-width: 79px;
 height: 39px;
 display: flex;
 flex-direction: row;
