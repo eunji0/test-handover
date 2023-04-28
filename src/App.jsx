@@ -16,16 +16,16 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-      <ScrollToTop/>
+        <ScrollToTop />
         <Header />
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} />
-            <Route path="/all" element={<AllPage/>} />
-            <Route path="/camping" element={<CampingPage/>} />
-            <Route path="/etc" element={<EtcPage/>} />
-            <Route path="/hotel" element={<HotelPage/>} />
-            <Route path="/show" element={<ShowPage/>} />
+            <Route path="/all" element={<AllPage />} />
+            <Route path="/camping" element={<CampingPage />} />
+            <Route path="/etc" element={<EtcPage />} />
+            <Route path="/hotel" element={<HotelPage />} />
+            <Route path="/show" element={<ShowPage />} />
             <Route path="/all/detailticket/:ticket_id" element={<DetailTicketPage />} />
           </Route>
           <Route path="/favorite" element={<FavoriteTicket />} />
@@ -40,7 +40,7 @@ function Layout() {
     <>
       <Category />
       <div>
-        {<Outlet/>}
+        {<Outlet />}
       </div>
     </>
   );
