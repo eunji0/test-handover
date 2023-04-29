@@ -317,6 +317,7 @@ export default function AllPage() {
     const [sortBy, setSortBy] = useState("date");
     // 현재 보여지고 있는 아이템의 개수
     const [numVisibleItems, setNumVisibleItems] = useState(5);
+    const [favorites, setFavorites] = useState([]);
 
     const categoryList =
         searchResults.length > 0
@@ -329,7 +330,7 @@ export default function AllPage() {
                     )
             : sortedCategoryDummy;
 
-            
+
 
     useEffect(() => {
         let sortedDummy;
@@ -353,7 +354,7 @@ export default function AllPage() {
     const location = useLocation();
 
     function handleTicketClick(ticketId) {
-      navigate(`${location.pathname}/detailticket/${ticketId}`);
+        navigate(`${location.pathname}/detailticket/${ticketId}`);
     }
 
     const handleClick = (sortType) => {
@@ -364,6 +365,16 @@ export default function AllPage() {
         setNumVisibleItems(numVisibleItems + 5);
         // 5개씩 더 보여줌
     };
+
+    const handleFavoriteClick = (ticketId) => {
+        const index = favorites.indexOf(ticketId);
+        if (index === -1) {
+            setFavorites([...favorites, ticketId]);
+        } else {
+            setFavorites(favorites.filter((id) => id !== ticketId));
+        }
+    };
+
 
     return (
         <div>
@@ -391,8 +402,8 @@ export default function AllPage() {
                         )}
                         <>
                             {categoryList.slice(0, numVisibleItems).map((item, index) => (
-                                <TicketBox key={index} 
-                                onClick={() => handleTicketClick(item.ticket_id)}
+                                <TicketBox key={index}
+                                    onClick={() => handleTicketClick(item.ticket_id)}
                                 >
                                     <ListTicketBox key={item.seller_ID}>
                                         <BoxinTop>
@@ -403,9 +414,8 @@ export default function AllPage() {
                                                 <SellBox type="button">
                                                     <TxtSell>{item.ticket_state}</TxtSell>
                                                 </SellBox>
-                                                <HeartBox>
-                                                    <img src={HeartSrc} alt="favorite" />
-                                                    
+                                                <HeartBox onClick={() => handleFavoriteClick(item.ticket_id)}>
+                                                    <img src={favorites.includes(item.ticket_id) ? HeartSelectedSrc : HeartSrc} alt="favorite" />
                                                 </HeartBox>
                                             </SitBox>
                                         </BoxinTop>
@@ -437,8 +447,6 @@ export default function AllPage() {
                                 </TicketBox>
                             ))}
                         </>
-
-
 
                         <BoxMore type="button" onClick={handleMoreButtonClick}>
                             <img src={MoreSrc} />

@@ -287,7 +287,7 @@ text-align: center;
 color: #1C65F3;
 `
 
-export default function FavoriteTicket() {
+export default function FavoriteTicket({ favorites }) {
     return (
         <div>
             <All>
@@ -296,51 +296,59 @@ export default function FavoriteTicket() {
                         <TxtTitle>내가 찜한 티켓</TxtTitle>
                     </DivTitle>
                 </BoxTitle>
+
                 <BoxFavorite>
                     <TicketBox>
-                        <ListTicketBox>
-                            <BoxinTop>
-                                <TicketNameBox>
-                                    <TxtTicketName>바다캠핑장</TxtTicketName>
-                                </TicketNameBox>
-                                <SitBox>
-                                    <SellBox type="button">
-                                        <TxtSell>판매중</TxtSell>
-                                    </SellBox>
-                                    <HeartBox>
-                                        <img src={HeartSrc} alt="favorite" />
+                        {favorites.length > 0 ? (
+                            favorites.map((ticket) => (
+                                <ListTicketBox key={ticket.id} ticket={ticket}>
+                                    <BoxinTop>
+                                        <TicketNameBox>
+                                            <TxtTicketName>바다캠핑장</TxtTicketName>
+                                        </TicketNameBox>
+                                        <SitBox>
+                                            <SellBox type="button">
+                                                <TxtSell>판매중</TxtSell>
+                                            </SellBox>
+                                            <HeartBox>
+                                                <img src={HeartSrc} alt="favorite" />
 
-                                    </HeartBox>
-                                </SitBox>
-                            </BoxinTop>
+                                            </HeartBox>
+                                        </SitBox>
+                                    </BoxinTop>
 
-                            <BoxinMid>
-                                <BoxMidL>
-                                    <LocationDateBox>
-                                        <TxtLocationDate>인천 서구 완정로117번길 35"</TxtLocationDate>
-                                    </LocationDateBox>
-                                    <LocationDateBox>
-                                        <TxtLocationDate>오션뷰 조식 미포함 11시 체크아웃</TxtLocationDate>
-                                    </LocationDateBox>
-                                </BoxMidL>
-                                <BoxMidR>
-                                    <TxtPrice>250,000원</TxtPrice>
-                                </BoxMidR>
-                            </BoxinMid>
+                                    <BoxinMid>
+                                        <BoxMidL>
+                                            <LocationDateBox>
+                                                <TxtLocationDate>인천 서구 완정로117번길 35"</TxtLocationDate>
+                                            </LocationDateBox>
+                                            <LocationDateBox>
+                                                <TxtLocationDate>오션뷰 조식 미포함 11시 체크아웃</TxtLocationDate>
+                                            </LocationDateBox>
+                                        </BoxMidL>
+                                        <BoxMidR>
+                                            <TxtPrice>250,000원</TxtPrice>
+                                        </BoxMidR>
+                                    </BoxinMid>
 
-                            <BoxBtm>
-                                <BoxTicketDetail>
-                                    <TxtDetail>오션뷰 조식 미포함 11시 체크아웃</TxtDetail>
-                                </BoxTicketDetail>
+                                    <BoxBtm>
+                                        <BoxTicketDetail>
+                                            <TxtDetail>오션뷰 조식 미포함 11시 체크아웃</TxtDetail>
+                                        </BoxTicketDetail>
 
-                                <BoxBuy>
-                                    <TxtBuy>구 매 하 기</TxtBuy>
-                                </BoxBuy>
-                            </BoxBtm>
-                        </ListTicketBox>
+                                        <BoxBuy>
+                                            <TxtBuy>구 매 하 기</TxtBuy>
+                                        </BoxBuy>
+                                    </BoxBtm>
+                                </ListTicketBox>
+                            ))
+                        ) : (
+                            <p>즐겨찾기한 항목이 없습니다.</p>
+                        )}
+
                     </TicketBox>
                 </BoxFavorite>
             </All>
         </div>
-    )
+    );
 }

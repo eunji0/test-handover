@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import TicketDetail from "../component/TicketDetail";
 import TicketComment from "../component/TicketComment";
 import styled from "styled-components";
-import { useLocation } from "react-router-dom";
 
 const All = styled.div`
 position: relative;

@@ -113,32 +113,13 @@ export default function Category() {
     navigate(`/all?${queryParam}`, { replace: true });
 
   };
-
+  
   console.log(selectedButton);
-
-  useEffect(() => {
-    if (location.pathname === '/all') {
-      setSelectedButton(1);
-    }
-  }, [location.pathname]);
-
-
-  const handleBeforeUnload = () => {
-    localStorage.removeItem('selectedButton');
-  };
-
 
   useEffect(() => {
     const buttonId = categoryTxt.findIndex((item) => item.to === location.pathname.substring(1));
     setSelectedButton(buttonId + 1);
   }, [location.pathname, categoryTxt]);
-
-  useEffect(() => {
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
 
 
   return (

@@ -1,6 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import MyPageSrc from "../svg/MyPage.svg";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { commentsState } from "../atoms/atoms";
+import CommentForm from "./CommentForm";
+
 
 const All = styled.div`
 display: flex;
@@ -51,6 +55,7 @@ flex-direction: row;
 align-items: flex-start;
 padding: ${(props) => props.padding};
 gap: 10px;
+padding: 10px;
 isolation: isolate;
 `
 
@@ -101,43 +106,39 @@ border-bottom: 1px solid rgba(28, 101, 243, 0.3);
 `
 
 export default function TicketComment() {
+    const comments = useRecoilValue(commentsState).slice().reverse();
+    const setComments = useSetRecoilState(commentsState);
+
+    const deleteComment = (commentId) => {
+      setComments((comments) => comments.filter((comment) => comment.id !== commentId));
+    };
+    
     return (
+
         <All>
             <InnerBox>
                 <TCommentBox>
                     <Comment>댓글</Comment>
                 </TCommentBox>
             </InnerBox>
-            <CommentBox padding="0px 10px 30px">
-                <Profile alt="profile" src={MyPageSrc} />
-                <CinnerBox>
-                    <TxtId>pppds132</TxtId>
-                </CinnerBox>
-            </CommentBox>
-            <CommentBox padding="10px">
-                <Profile alt="profile" src={MyPageSrc} />
-                <CinnerBox>
-                    <TxtId>pppds132</TxtId>
-                    <CommentTxt>누구 공연인가요?</CommentTxt>
-                </CinnerBox>
-
-            </CommentBox>
-            <CommentBox padding="10px">
-                <Profile alt="profile" src={MyPageSrc} />
-                <CinnerBox>
-                    <TxtId>pppds132</TxtId>
-                    <CommentTxt>누구 공연인가요?</CommentTxt>
-                </CinnerBox>
-
-            </CommentBox>
-            <CommentBox padding="10px">
-                <Profile alt="profile" src={MyPageSrc} />
-                <CinnerBox>
-                    <TxtId>pppds132</TxtId>
-                    <CommentTxt>누구 공연인가요?</CommentTxt>
-                </CinnerBox>
-
-            </CommentBox>
+            <CommentForm />
+            <div>
+                {comments.map((comment) => (
+                    <CommentBox key={comment.id}>
+                        <Profile alt="profile" src={MyPageSrc} />
+                        <CinnerBox>
+                            <TxtId>pppds132</TxtId>
+                            <CommentTxt>{comment.text}</CommentTxt>
+                            {/* 자기 글일때만 보이는 버튼 */}
+                            <button onClick={() => deleteComment(comment.id)}>Delete</button>
+                        </CinnerBox>
+                    </CommentBox>
+                    // <div key={comment.id}>
+                    //     <p>{comment.text}</p>
+                    //     <button onClick={() => deleteComment(comment.id)}>Delete</button>
+                    // </div>
+                ))}
+            </div>
         </All>
     )
 }
