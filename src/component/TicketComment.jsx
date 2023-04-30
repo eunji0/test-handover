@@ -105,6 +105,27 @@ height: 50px;
 border-bottom: 1px solid rgba(28, 101, 243, 0.3);
 `
 
+const DeleteBox = styled.button`
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 5px;
+gap: 10px;
+position: absolute;
+left: 937px;
+background: #FFFFFF;
+border: 1px solid #1C65F3;
+border-radius: 5px;
+`
+
+const DeleteTxt =styled.div`
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 14px;
+color: #1C65F3;
+`
+
 export default function TicketComment() {
     const comments = useRecoilValue(commentsState).slice().reverse();
     const setComments = useSetRecoilState(commentsState);
@@ -130,7 +151,10 @@ export default function TicketComment() {
                             <TxtId>pppds132</TxtId>
                             <CommentTxt>{comment.text}</CommentTxt>
                             {/* 자기 글일때만 보이는 버튼 */}
-                            <button onClick={() => deleteComment(comment.id)}>Delete</button>
+                            <DeleteBox onClick={() => deleteComment(comment.id)}>
+                                <DeleteTxt>삭제</DeleteTxt>
+                            </DeleteBox>
+                           
                         </CinnerBox>
                     </CommentBox>
                     // <div key={comment.id}>
