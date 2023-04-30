@@ -114,7 +114,6 @@ export default function Category() {
 
   };
   
-  console.log(selectedButton);
 
   useEffect(() => {
     const buttonId = categoryTxt.findIndex((item) => item.to === location.pathname.substring(1));

@@ -12,7 +12,7 @@ export const commentsState = atom({
   default: [],
 });
 
-// export const selectedButtonState = atom({
-//   key: 'selectedButtonState',
-//   default: parseInt(localStorage.getItem('selectedButton')) || null,
-// });
+export const favoriteState = atom({
+  key: "favoriteState",
+  default: [],
+})

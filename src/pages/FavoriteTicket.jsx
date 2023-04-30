@@ -3,6 +3,9 @@ import styled from "styled-components";
 import MoreSrc from "../svg/More.svg";
 import HeartSelectedSrc from "../svg/HeartSelect.svg";
 import HeartSrc from "../svg/Heart.svg";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { favoriteState } from "../atoms/atoms";
+import { getTicketById } from '../categoryDummy';
 
 const All = styled.div`
 position: relative;
@@ -287,7 +290,13 @@ text-align: center;
 color: #1C65F3;
 `
 
-export default function FavoriteTicket({ favorites }) {
+export default function FavoriteTicket() {
+    const favorites = useRecoilValue(favoriteState);
+    const tickets = favorites.map((ticket_id) => getTicketById(ticket_id));
+
+    console.log(favorites);
+    console.log(tickets)
+
     return (
         <div>
             <All>
@@ -298,55 +307,51 @@ export default function FavoriteTicket({ favorites }) {
                 </BoxTitle>
 
                 <BoxFavorite>
-                    <TicketBox>
-                        {favorites.length > 0 ? (
-                            favorites.map((ticket) => (
-                                <ListTicketBox key={ticket.id} ticket={ticket}>
-                                    <BoxinTop>
-                                        <TicketNameBox>
-                                            <TxtTicketName>바다캠핑장</TxtTicketName>
-                                        </TicketNameBox>
-                                        <SitBox>
-                                            <SellBox type="button">
-                                                <TxtSell>판매중</TxtSell>
-                                            </SellBox>
-                                            <HeartBox>
-                                                <img src={HeartSrc} alt="favorite" />
+                    {tickets.length === 0 && <p>즐겨찾기에 추가된 티켓이 없습니다.</p>}
+                    {tickets.map((ticket, index) => (
+                        <TicketBox key={index}>
+                            <ListTicketBox key={index} ticket={ticket}>
+                                <BoxinTop>
+                                    <TicketNameBox>
+                                        <TxtTicketName>{ticket.ticket_name}</TxtTicketName>
+                                    </TicketNameBox>
+                                    <SitBox>
+                                        <SellBox type="button">
+                                            <TxtSell>{ticket.ticket_state}</TxtSell>
+                                        </SellBox>
+                                        <HeartBox>
+                                            <img src={HeartSrc} alt="favorite" />
 
-                                            </HeartBox>
-                                        </SitBox>
-                                    </BoxinTop>
+                                        </HeartBox>
+                                    </SitBox>
+                                </BoxinTop>
 
-                                    <BoxinMid>
-                                        <BoxMidL>
-                                            <LocationDateBox>
-                                                <TxtLocationDate>인천 서구 완정로117번길 35"</TxtLocationDate>
-                                            </LocationDateBox>
-                                            <LocationDateBox>
-                                                <TxtLocationDate>오션뷰 조식 미포함 11시 체크아웃</TxtLocationDate>
-                                            </LocationDateBox>
-                                        </BoxMidL>
-                                        <BoxMidR>
-                                            <TxtPrice>250,000원</TxtPrice>
-                                        </BoxMidR>
-                                    </BoxinMid>
+                                <BoxinMid>
+                                    <BoxMidL>
+                                        <LocationDateBox>
+                                            <TxtLocationDate>{ticket.ticket_place}</TxtLocationDate>
+                                        </LocationDateBox>
+                                        <LocationDateBox>
+                                            <TxtLocationDate>{ticket.ticket_date}</TxtLocationDate>
+                                        </LocationDateBox>
+                                    </BoxMidL>
+                                    <BoxMidR>
+                                        <TxtPrice>{ticket.ticket_price}원</TxtPrice>
+                                    </BoxMidR>
+                                </BoxinMid>
 
-                                    <BoxBtm>
-                                        <BoxTicketDetail>
-                                            <TxtDetail>오션뷰 조식 미포함 11시 체크아웃</TxtDetail>
-                                        </BoxTicketDetail>
+                                <BoxBtm>
+                                    <BoxTicketDetail>
+                                        <TxtDetail>{ticket.ticket_detail}</TxtDetail>
+                                    </BoxTicketDetail>
 
-                                        <BoxBuy>
-                                            <TxtBuy>구 매 하 기</TxtBuy>
-                                        </BoxBuy>
-                                    </BoxBtm>
-                                </ListTicketBox>
-                            ))
-                        ) : (
-                            <p>즐겨찾기한 항목이 없습니다.</p>
-                        )}
-
-                    </TicketBox>
+                                    <BoxBuy>
+                                        <TxtBuy>구 매 하 기</TxtBuy>
+                                    </BoxBuy>
+                                </BoxBtm>
+                            </ListTicketBox>
+                        </TicketBox>
+                    ))}
                 </BoxFavorite>
             </All>
         </div>

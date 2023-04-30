@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 import categoryDummy from "../categoryDummy";
 import MoreSrc from "../svg/More.svg";
 import HeartSelectedSrc from "../svg/HeartSelect.svg";
-import { useRecoilValue } from 'recoil';
-import { searchResultsState } from '../atoms/atoms';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { favoriteState, searchResultsState } from '../atoms/atoms';
 import { useNavigate, useLocation } from "react-router-dom";
 
 const All = styled.div`
@@ -147,7 +147,7 @@ gap: 10px;
 width: 38px;
 height: 38px;
 background: #FFFFFF;
-border: 1px solid #C9C9C9;
+border: ${(props) => props.border};
 border-radius: 10px;
 `
 
@@ -317,7 +317,7 @@ export default function AllPage() {
     const [sortBy, setSortBy] = useState("date");
     // 현재 보여지고 있는 아이템의 개수
     const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [favorites, setFavorites] = useState([]);
+    const [favorites, setFavorites] = useRecoilState(favoriteState);
 
     const categoryList =
         searchResults.length > 0
@@ -353,7 +353,7 @@ export default function AllPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    function handleTicketClick(ticketId) {
+    const handleTicketClick=(ticketId)=> {
         navigate(`${location.pathname}/detailticket/${ticketId}`);
     }
 
@@ -366,15 +366,31 @@ export default function AllPage() {
         // 5개씩 더 보여줌
     };
 
+    // 하트 버튼 클릭 시 호출되는 함수
+    // const handleFavoriteClick = (ticketId) => {
+    //     if (favorites.includes(ticketId)) {
+    //         // 이미 즐겨찾기에 추가된 티켓일 경우
+    //         const newFavorites = favorites.filter((id) => id !== ticketId);
+    //         setFavorites(newFavorites);
+    //     } else {
+    //         // 즐겨찾기에 추가되지 않은 티켓일 경우
+    //         const newFavorites = [...favorites, ticketId];
+    //         setFavorites(newFavorites);
+    //     }
+    // };
     const handleFavoriteClick = (ticketId) => {
-        const index = favorites.indexOf(ticketId);
-        if (index === -1) {
-            setFavorites([...favorites, ticketId]);
+        if (favorites.includes(ticketId)) {
+          // 이미 즐겨찾기에 추가된 티켓일 경우
+          const newFavorites = favorites.filter((id) => id !== ticketId);
+          setFavorites(newFavorites);
         } else {
-            setFavorites(favorites.filter((id) => id !== ticketId));
+          // 즐겨찾기에 추가되지 않은 티켓일 경우
+          const newFavorites = [...favorites, ticketId];
+          setFavorites(newFavorites);
         }
-    };
-
+      };
+    
+    console.log(favorites);
 
     return (
         <div>
@@ -414,9 +430,14 @@ export default function AllPage() {
                                                 <SellBox type="button">
                                                     <TxtSell>{item.ticket_state}</TxtSell>
                                                 </SellBox>
-                                                <HeartBox onClick={() => handleFavoriteClick(item.ticket_id)}>
-                                                    <img src={favorites.includes(item.ticket_id) ? HeartSelectedSrc : HeartSrc} alt="favorite" />
+                                                <HeartBox onClick={(event) => {
+                                                    event.stopPropagation(); // 이벤트 버블링 방지
+                                                    handleFavoriteClick(item.ticket_id);
+                                                }} border={favorites.includes(item.ticket_id) ? "1px solid #1C65F3" : "1px solid #C9C9C9"}>
+                                                    <img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.ticket_id) ? HeartSelectedSrc : HeartSrc} />
                                                 </HeartBox>
+
+
                                             </SitBox>
                                         </BoxinTop>
 
