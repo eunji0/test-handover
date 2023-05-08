@@ -3,11 +3,15 @@ import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
 import { useState, useEffect } from "react";
 import categoryDummy from "../categoryDummy";
-import MoreSrc from "../svg/More.svg";
-import HeartSelectedSrc from "../svg/HeartSelect.svg";
+import moreSrc from "../svg/More.svg";
+import heartSelectedSrc from "../svg/heartSelect.svg";
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { favoriteState, searchResultsState } from '../atoms/atoms';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import COLORS from "./styled/colors";
+import axios from "axios";
+
+
 
 const All = styled.div`
 position: relative;
@@ -61,7 +65,7 @@ display: flex;
 align-items: center;
 text-align: center;
 letter-spacing: 0.2em;
-color: #1C65F3;
+color: ${COLORS.Navy_100};
 `
 
 const TicketBox = styled.div`
@@ -76,8 +80,6 @@ flex-direction: row;
 justify-content: space-between;
 align-items: center;
 padding: 0px;
-gap: 10px;
-
 `
 
 const BoxinMid = styled.div`
@@ -101,15 +103,14 @@ gap: 83px;
 `
 
 const TicketNameBox = styled.div`
-height: 39px;
 display: flex;
 flex-direction: row;
 justify-content: center;
 align-items: center;
-padding: 10px;
+padding: 10px 8px 10px 10px;
 gap: 10px;
-background: #FFFFFF;
-border: 1px solid #1C65F3;
+background: ${COLORS.WHITE};
+border: 1px solid ${COLORS.Navy_100};
 border-radius: 10px;
 `
 
@@ -128,11 +129,11 @@ const SellBox = styled.div`
 height: 39px;
 display: flex;
 flex-direction: row;
-align-items: flex-start;
-padding: 10px 14px;
+align-items: center;
+padding: 10px 11px 10px 12px;
 gap: 10px;
-background: #FFFFFF;
-border: 1px solid #1C65F3;
+background: ${COLORS.WHITE};
+border: 1px solid ${COLORS.Navy_100};
 border-radius: 10px;
 
 `
@@ -146,7 +147,7 @@ padding: 5px;
 gap: 10px;
 width: 38px;
 height: 38px;
-background: #FFFFFF;
+background: ${COLORS.WHITE};
 border: ${(props) => props.border};
 border-radius: 10px;
 `
@@ -154,13 +155,13 @@ border-radius: 10px;
 const TxtTicketName = styled.div`
 font-style: normal;
 font-weight: 700;
-font-size: 16px;
-line-height: 19px;
+font-size: 14px;
+line-height: 16px;
 display: flex;
-align-items: flex-end;
+align-items: center;
 text-align: center;
-letter-spacing: 0.05em;
-color: #222222;
+letter-spacing: 0.2em;
+color: ${COLORS.Navy_100};
 `
 
 const TxtSell = styled.div`
@@ -171,7 +172,7 @@ line-height: 19px;
 display: flex;
 align-items: center;
 text-align: center;
-color: #1C65F3;
+color: ${COLORS.Navy_100};
 `
 
 const BoxMidL = styled.div`
@@ -192,7 +193,7 @@ align-items: center;
 padding: 10px;
 gap: 10px;
 background: #FFFFFF;
-border: 1px solid #1C65F3;
+border: 1px solid ${COLORS.Navy_100};
 border-radius: 10px;
 `
 
@@ -203,7 +204,7 @@ flex-direction: row;
 align-items: center;
 padding: 10px;
 gap: 10px;
-background: #FFFFFF;
+background: ${COLORS.WHITE};;
 border-radius: 10px;
 `
 
@@ -216,7 +217,7 @@ display: flex;
 align-items: center;
 text-align: center;
 letter-spacing: 0.15em;
-color: #222222;
+color: ${COLORS.BLACK};;
 `
 
 const TxtPrice = styled.div`
@@ -228,7 +229,7 @@ display: flex;
 align-items: center;
 text-align: center;
 letter-spacing: 0.2em;
-color: #222222;
+color: ${COLORS.BLACK};;
 `
 
 const BoxTicketDetail = styled.div`
@@ -239,7 +240,7 @@ padding: 10px;
 gap: 10px;
 width: 70%;
 height: 70px;
-background: #FFFFFF;
+background: ${COLORS.WHITE};
 border-radius: 10px;
 height: 70px;
 `
@@ -249,16 +250,22 @@ font-style: normal;
 font-weight: 400;
 font-size: 12px;
 line-height: 14px;
-color: #222222;
+color: ${COLORS.BLACK};
 `
 
 const BoxMore = styled.div`
 display: flex;
-flex-direction: column;
+flex-direction: row;
 justify-content: center;
 align-items: center;
-padding: 10px;
+padding: 0px 30px;
 gap: 10px;
+background: ${COLORS.WHITE};
+border: 1px solid ${COLORS.Navy_100};
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 40px;
+width: 76px;
+height: 38px;
 `
 
 const ListTicketBox = styled.div`
@@ -266,11 +273,10 @@ display: flex;
 flex-direction: column;
 align-items: flex-start;
 padding: 10px;
-gap: 20px;
-background: rgba(28, 101, 243, 0.05);
+gap: 15px;
+background-color: ${COLORS.Navy_5};
 border-radius: 10px;
 width: 100%;
-height: 205px;
 `
 
 const BoxBuy = styled.div`
@@ -278,12 +284,11 @@ display: flex;
 flex-direction: row;
 justify-content: center;
 align-items: center;
-padding: 10px 20px;
 gap: 10px;
 width: 124px;
 height: 39px;
-background: #FFFFFF;
-border: 2px solid #1C65F3;
+background: ${COLORS.WHITE};
+border: 2px solid ${COLORS.Navy_100};
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 10px;
 `
@@ -296,7 +301,7 @@ line-height: 19px;
 display: flex;
 align-items: center;
 text-align: center;
-color: #1C65F3;
+color: ${COLORS.Navy_100};
 `
 
 const TxtNone = styled.div`
@@ -307,10 +312,22 @@ line-height: 19px;
 display: flex;
 align-items: center;
 text-align: center;
-color: #000000;
+color: ${COLORS.BLACK};
 `
 
-export default function AllPage() {
+const fetchMatches = async () => {
+    try {
+        const response = await axios.get('http://api/matches');
+        const matches = response.data;
+        console.log(matches); // 매칭글 데이터 콘솔 출력 예시
+        return matches;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
+const AllPage = () => {
     const searchResults = useRecoilValue(searchResultsState);
     //categorydummy
     const [sortedCategoryDummy, setSortedCategoryDummy] = useState([]);
@@ -318,15 +335,29 @@ export default function AllPage() {
     // 현재 보여지고 있는 아이템의 개수
     const [numVisibleItems, setNumVisibleItems] = useState(5);
     const [favorites, setFavorites] = useRecoilState(favoriteState);
+    const [matches, setMatches] = useState([]);
+
+    useEffect(() => {
+      axios.get('http://localhost:8080/api/matches')
+        .then(res => {
+          setMatches(res.data);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }, []);
+
+    console.log(matches)
+
 
     const categoryList =
         searchResults.length > 0
             ? sortBy === "lowPrice"
-                ? [...searchResults].sort((a, b) => a.ticket_price - b.ticket_price)
+                ? [...searchResults].sort((a, b) => a.price - b.price)
                 : sortBy === "highPrice"
-                    ? [...searchResults].sort((a, b) => b.ticket_price - a.ticket_price)
+                    ? [...searchResults].sort((a, b) => b.price - a.price)
                     : [...searchResults].sort(
-                        (a, b) => new Date(a.ticket_date) - new Date(b.ticket_date)
+                        (a, b) => new Date(a.date) - new Date(b.date)
                     )
             : sortedCategoryDummy;
 
@@ -336,25 +367,24 @@ export default function AllPage() {
         let sortedDummy;
         if (sortBy === "lowPrice") {
             sortedDummy = [...categoryDummy].sort(
-                (a, b) => a.ticket_price - b.ticket_price
+                (a, b) => a.price - b.price
             );
         } else if (sortBy === "highPrice") {
             sortedDummy = [...categoryDummy].sort(
-                (a, b) => b.ticket_price - a.ticket_price
+                (a, b) => b.price - a.price
             );
         } else {
             sortedDummy = [...categoryDummy].sort(
-                (a, b) => new Date(a.ticket_date) - new Date(b.ticket_date)
+                (a, b) => new Date(a.date) - new Date(b.date)
             );
         }
         setSortedCategoryDummy(sortedDummy);
     }, [categoryDummy, sortBy]);
 
     const navigate = useNavigate();
-    const location = useLocation();
 
-    const handleTicketClick=(ticketId)=> {
-        navigate(`${location.pathname}/detailticket/${ticketId}`);
+    const handleTicketClick = (matchingId) => {
+        navigate(`/detailticket/${matchingId}`);
     }
 
     const handleClick = (sortType) => {
@@ -367,30 +397,17 @@ export default function AllPage() {
     };
 
     // 하트 버튼 클릭 시 호출되는 함수
-    // const handleFavoriteClick = (ticketId) => {
-    //     if (favorites.includes(ticketId)) {
-    //         // 이미 즐겨찾기에 추가된 티켓일 경우
-    //         const newFavorites = favorites.filter((id) => id !== ticketId);
-    //         setFavorites(newFavorites);
-    //     } else {
-    //         // 즐겨찾기에 추가되지 않은 티켓일 경우
-    //         const newFavorites = [...favorites, ticketId];
-    //         setFavorites(newFavorites);
-    //     }
-    // };
-    const handleFavoriteClick = (ticketId) => {
-        if (favorites.includes(ticketId)) {
-          // 이미 즐겨찾기에 추가된 티켓일 경우
-          const newFavorites = favorites.filter((id) => id !== ticketId);
-          setFavorites(newFavorites);
+    const handleFavoriteClick = (matchingId) => {
+        if (favorites.includes(matchingId)) {
+            // 이미 즐겨찾기에 추가된 티켓일 경우
+            const newFavorites = favorites.filter((id) => id !== matchingId);
+            setFavorites(newFavorites);
         } else {
-          // 즐겨찾기에 추가되지 않은 티켓일 경우
-          const newFavorites = [...favorites, ticketId];
-          setFavorites(newFavorites);
+            // 즐겨찾기에 추가되지 않은 티켓일 경우
+            const newFavorites = [...favorites, matchingId];
+            setFavorites(newFavorites);
         }
-      };
-    
-    console.log(favorites);
+    };
 
     return (
         <div>
@@ -419,49 +436,53 @@ export default function AllPage() {
                         <>
                             {categoryList.slice(0, numVisibleItems).map((item, index) => (
                                 <TicketBox key={index}
-                                    onClick={() => handleTicketClick(item.ticket_id)}
+                                    onClick={() => handleTicketClick(item.id)}
                                 >
                                     <ListTicketBox key={item.seller_ID}>
                                         <BoxinTop>
                                             <TicketNameBox>
-                                                <TxtTicketName>{item.ticket_name}</TxtTicketName>
+                                                <TxtTicketName>{item.category}</TxtTicketName>
                                             </TicketNameBox>
                                             <SitBox>
-                                                <SellBox type="button">
-                                                    <TxtSell>{item.ticket_state}</TxtSell>
+                                                <SellBox>
+                                                    <TxtSell>{item.state}</TxtSell>
                                                 </SellBox>
                                                 <HeartBox onClick={(event) => {
                                                     event.stopPropagation(); // 이벤트 버블링 방지
-                                                    handleFavoriteClick(item.ticket_id);
-                                                }} border={favorites.includes(item.ticket_id) ? "1px solid #1C65F3" : "1px solid #C9C9C9"}>
-                                                    <img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.ticket_id) ? HeartSelectedSrc : HeartSrc} />
+                                                    handleFavoriteClick(item.id);
+                                                }} border={favorites.includes(item.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
+                                                    <img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectedSrc : HeartSrc} />
                                                 </HeartBox>
 
 
                                             </SitBox>
                                         </BoxinTop>
-
+                                        <BoxMidL>
+                                            <LocationDateBox>
+                                                <TxtLocationDate>{item.title}</TxtLocationDate>
+                                            </LocationDateBox>
+                                        </BoxMidL>
                                         <BoxinMid>
                                             <BoxMidL>
                                                 <LocationDateBox>
-                                                    <TxtLocationDate>{item.ticket_place}</TxtLocationDate>
+                                                    <TxtLocationDate>{item.location}</TxtLocationDate>
                                                 </LocationDateBox>
                                                 <LocationDateBox>
-                                                    <TxtLocationDate>{item.ticket_date}</TxtLocationDate>
+                                                    <TxtLocationDate>{item.date}</TxtLocationDate>
                                                 </LocationDateBox>
                                             </BoxMidL>
                                             <BoxMidR>
-                                                <TxtPrice>{item.ticket_price}원</TxtPrice>
+                                                <TxtPrice>{item.price}원</TxtPrice>
                                             </BoxMidR>
                                         </BoxinMid>
 
                                         <BoxBtm>
                                             <BoxTicketDetail>
-                                                <TxtDetail>{item.ticket_detail}</TxtDetail>
+                                                <TxtDetail>{item.content}</TxtDetail>
                                             </BoxTicketDetail>
 
                                             <BoxBuy>
-                                                <TxtBuy>구 매 하 기</TxtBuy>
+                                                <TxtBuy>매 칭 하 기</TxtBuy>
                                             </BoxBuy>
                                         </BoxBtm>
                                     </ListTicketBox>
@@ -470,7 +491,7 @@ export default function AllPage() {
                         </>
 
                         <BoxMore type="button" onClick={handleMoreButtonClick}>
-                            <img src={MoreSrc} />
+                            <img src={moreSrc} />
                         </BoxMore>
                     </ListTicket>
                 </Allin>
@@ -478,3 +499,5 @@ export default function AllPage() {
         </div>
     )
 }
+
+export default AllPage;

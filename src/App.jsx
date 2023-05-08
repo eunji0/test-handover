@@ -3,31 +3,39 @@ import Header from './component/Header'
 import Category from "./component/Category";
 import './App.css'
 import AllPage from "./pages/AllPage";
-import CampingPage from "./pages/CampingPage";
+import KidsPage from "./pages/KidsPage";
 import EtcPage from "./pages/EtcPage";
-import HotelPage from "./pages/HotelPage";
-import ShowPage from "./pages/ShowPage";
+import ElderyPage from "./pages/ElderlyPage";
+import PetPage from "./pages/PetPage";
 import MainPage from "./pages/MainPage";
 import DetailTicketPage from "./pages/DetailTicketPage";
 import ScrollToTop from "./component/ScrollToTop";
 import FavoriteTicket from "./pages/FavoriteTicket";
+import GlobalStyle from "./pages/styled/GlobalStyle";
+import { Introduction } from "./component/Introduction";
 
-function App() {
+export default function App() {
   return (
     <div className="App">
+      <GlobalStyle />
       <BrowserRouter>
-        <ScrollToTop />
         <Header />
         <Routes>
           <Route element={<Layout />}>
-              <Route path="/" element={<MainPage />} />
-              <Route path="/all" element={<AllPage />} />
-              <Route path="/camping" element={<CampingPage />} />
-              <Route path="/etc" element={<EtcPage />} />
-              <Route path="/hotel" element={<HotelPage />} />
-              <Route path="/show" element={<ShowPage />} />
-              <Route path="/all/detailticket/:ticket_id" element={<DetailTicketPage />} />
-          
+            <Route path="/" element={<AllPage />} />
+            <Route path="/elderly" element={<ElderyPage />} />
+            <Route path="/pet" element={<PetPage />} />
+            <Route path="/kids" element={<KidsPage />} />
+            <Route path="/etc" element={<EtcPage />} />
+            
+          </Route>
+          <Route element={<CategoryLayout />}>
+            <Route path="/detailticket/:ticket_id" element={
+              <>
+                <ScrollToTop />
+                <DetailTicketPage />
+              </>
+            } />
           </Route>
           <Route path="/favorite" element={<FavoriteTicket />} />
         </Routes>
@@ -36,7 +44,19 @@ function App() {
   );
 }
 
-function Layout() {
+const Layout = () => {
+  return (
+    <>
+      <Introduction />
+      <Category />
+      <div>
+        {<Outlet />}
+      </div>
+    </>
+  );
+}
+
+function CategoryLayout() {
   return (
     <>
       <Category />
@@ -46,5 +66,3 @@ function Layout() {
     </>
   );
 }
-
-export default App;

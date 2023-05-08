@@ -312,12 +312,12 @@ text-align: center;
 color: ${COLORS.BLACK};
 `
 
-const EtcPage = () => {
+const KidsPage = () => {
     const searchResults = useRecoilValue(searchResultsState);
     const [sortedCategoryDummy, setSortedCategoryDummy] = useState([]);
     const [sortBy, setSortBy] = useState("date");
     const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [elderlyCategoryDummy, setElderlyCategoryDummy] = useState(categoryDummy.filter(category => category.category === "기타"));
+    const [elderlyCategoryDummy, setElderlyCategoryDummy] = useState(categoryDummy.filter(category => category.category === "아이돌봄"));
     const [favorites, setFavorites] = useRecoilState(favoriteState);
     
     const categoryList =
@@ -353,8 +353,8 @@ const EtcPage = () => {
 
     const navigate = useNavigate();
 
-    const handleTicketClick = (ticketId) => {
-        navigate(`/detailticket/${ticketId}`);
+    const handleTicketClick=(matchingId)=> {
+        navigate(`/detailticket/${matchingId}`);
     }
 
     const handleClick = (sortType) => {
@@ -470,4 +470,4 @@ const EtcPage = () => {
     )
 }
 
-export default EtcPage;
+export default KidsPage;

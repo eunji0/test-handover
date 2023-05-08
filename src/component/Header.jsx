@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
-import LogoSrc from '../svg/Logo.svg';
+import logoSrc from '../svg/logoSrc.svg';
 import SearchSrc from '../svg/Search.svg';
-import SellTicketSrc from '../svg/SellTicket.svg';
 import MyPageSrc from '../svg/MyPage.svg';
 import { Link } from 'react-router-dom';
 import categoryDummy from "../categoryDummy";
@@ -10,10 +9,12 @@ import { useRecoilState } from 'recoil';
 import { searchResultsState } from '../atoms/atoms';
 import { useNavigate } from "react-router-dom";
 import queryString from "query-string";
+import COLORS from "../pages/styled/colors";
+import alarmSrc from "../svg/alarm.svg";
 
 const All = styled.div`
 position: relative;
-width: 1000px;
+/* width: 1000px; */
 height: 90px;
 margin: 0px auto;
 `
@@ -24,12 +25,10 @@ flex-direction: row;
 justify-content: space-between;
 align-items: center;
 padding: 20px 15px;
-border-bottom: 1px solid rgba(28, 101, 243, 0.25);
+isolation: isolate;
 `
 
 const Logo = styled.img.attrs({ alt: "로고" })`
-width: 124.85px;
-height: 44.42px;
 `
 
 const LogoLink = styled(Link)`
@@ -37,16 +36,15 @@ text-decoration-line: none;
 `
 
 const SearchBox = styled.form`
-width: 420px;
-height: 50px;
-
 display: flex;
 flex-direction: row;
-justify-content: space-between;
+justify-content: flex-end;
 align-items: center;
-padding: 10px 20px 10px 15px;
-background: #FFFFFF;
-border: 2px solid #1C65F3;
+padding: 0px 20px 0px 0px;
+width: 420px;
+height: 50px;
+background: ${COLORS.WHITE};
+border: 2px solid ${COLORS.Navy_100};
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 40px;
 `
@@ -54,28 +52,23 @@ border-radius: 40px;
 const MypageBox = styled.div`
 display: flex;
 flex-direction: row;
-justify-content: space-between;
+justify-content: center;
 align-items: center;
-padding: 7.5px 15px;
+padding: 7.5px 5px;
 gap: 10px;
-width: 120px;
-height: 52px;
-background: #FFFFFF;
-border: 2px solid #1C65F3;
-border-radius: 40px;
+background: ${COLORS.WHITE};
 `
 const SearchBtn = styled.button`
 display: flex;
 flex-direction: row;
 justify-content: center;
 align-items: center;
-padding: 0px;
+padding: 0;
 gap: 10px;
 width: 25px;
 height: 25px;
-
 border: none;
-background-color: #FFFFFF;
+background-color: ${COLORS.WHITE};
 `
 const Searchimg = styled.img.attrs({ alt: "검색 버튼" })`
 width: 25px;
@@ -83,7 +76,9 @@ height: 25px;
 `
 
 const Searchinput = styled.input`
+background: none;
 width: 350px;
+margin-left: 10px;
 height: 30px;
 border: none;
 outline: none;
@@ -111,7 +106,7 @@ height: 37px;
 `
 
 
-export default function Header() {
+const Header = ()=> {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [_, setSearchResults] = useRecoilState(searchResultsState);
@@ -120,8 +115,8 @@ export default function Header() {
     // 검색 필터링 함수
     const filterResults = (searchTerm) => {
         const filteredData = categoryDummy.filter((item) =>
-            item.ticket_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.ticket_place.toLowerCase().includes(searchTerm.toLowerCase())
+            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.location.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setSearchResults(filteredData);
     };
@@ -144,7 +139,7 @@ export default function Header() {
         filterResults(searchTerm);
         // URL 변경
         const queryParam = queryString.stringify({ q: searchTerm });
-        navigate(`/all?${queryParam}`, { replace: true });
+        navigate(`/?${queryParam}`, { replace: true });
     };
 
     //카테고리버튼 리셋
@@ -159,7 +154,7 @@ export default function Header() {
             <All>
                 <Allin>
                     <LogoLink to="/" onClick={resetSelectedButton}>
-                        <Logo src={LogoSrc} />
+                        <Logo src={logoSrc} />
                     </LogoLink>
 
                     <SearchBox onSubmit={handleSearch}>
@@ -171,7 +166,7 @@ export default function Header() {
 
                     <MypageBox>
                         <div>
-                            <SellTicket src={SellTicketSrc} />
+                            <SellTicket src={alarmSrc} />
                         </div>
                         <Link to="/favorite">
                             <Mypage src={MyPageSrc} />
@@ -187,3 +182,5 @@ export default function Header() {
 
     )
 }
+
+export default Header;

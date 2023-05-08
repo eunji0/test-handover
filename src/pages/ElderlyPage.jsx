@@ -312,12 +312,12 @@ text-align: center;
 color: ${COLORS.BLACK};
 `
 
-const EtcPage = () => {
+const ElderlyPage=()=> {
     const searchResults = useRecoilValue(searchResultsState);
     const [sortedCategoryDummy, setSortedCategoryDummy] = useState([]);
     const [sortBy, setSortBy] = useState("date");
     const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [elderlyCategoryDummy, setElderlyCategoryDummy] = useState(categoryDummy.filter(category => category.category === "기타"));
+    const [elderlyCategoryDummy, setElderlyCategoryDummy] = useState(categoryDummy.filter(category => category.category === "노인돌봄"));
     const [favorites, setFavorites] = useRecoilState(favoriteState);
     
     const categoryList =
@@ -353,8 +353,8 @@ const EtcPage = () => {
 
     const navigate = useNavigate();
 
-    const handleTicketClick = (ticketId) => {
-        navigate(`/detailticket/${ticketId}`);
+    const handleTicketClick=(matchingId)=> {
+        navigate(`/detailticket/${matchingId}`);
     }
 
     const handleClick = (sortType) => {
@@ -369,15 +369,15 @@ const EtcPage = () => {
     // 하트 버튼 클릭 시 호출되는 함수
     const handleFavoriteClick = (matchingId) => {
         if (favorites.includes(matchingId)) {
-            // 이미 즐겨찾기에 추가된 티켓일 경우
-            const newFavorites = favorites.filter((id) => id !== matchingId);
-            setFavorites(newFavorites);
+          // 이미 즐겨찾기에 추가된 티켓일 경우
+          const newFavorites = favorites.filter((id) => id !== matchingId);
+          setFavorites(newFavorites);
         } else {
-            // 즐겨찾기에 추가되지 않은 티켓일 경우
-            const newFavorites = [...favorites, matchingId];
-            setFavorites(newFavorites);
+          // 즐겨찾기에 추가되지 않은 티켓일 경우
+          const newFavorites = [...favorites, matchingId];
+          setFavorites(newFavorites);
         }
-    };
+      };
 
     return (
         <div>
@@ -470,4 +470,4 @@ const EtcPage = () => {
     )
 }
 
-export default EtcPage;
+export default ElderlyPage;

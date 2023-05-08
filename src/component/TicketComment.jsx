@@ -4,6 +4,7 @@ import MyPageSrc from "../svg/MyPage.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { commentsState } from "../atoms/atoms";
 import CommentForm from "./CommentForm";
+import COLORS from "../pages/styled/colors";
 
 
 const All = styled.div`
@@ -22,17 +23,17 @@ align-items: flex-start;
 padding: 10px 0px 20px;
 gap: 10px;
 width: 100%;
-border-bottom: 2px solid rgba(28, 101, 243, 0.3);
+border-bottom: 2px solid ${COLORS.Navy_100};
 `
 
 const TCommentBox = styled.div`
 display: flex;
 flex-direction: row;
 align-items: flex-start;
-padding: 10px 7px 10px 15px;
+padding: 10px 7px 8px 15px;
 gap: 10px;
-background: #FFFFFF;
-border: 1px solid #1C65F3;
+background: ${COLORS.WHITE};
+border: 1px solid ${COLORS.Navy_100};
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 40px;
 `
@@ -46,7 +47,7 @@ display: flex;
 align-items: center;
 text-align: center;
 letter-spacing: 0.5em;
-color: #1C65F3;
+color: ${COLORS.Navy_100};
 `
 
 const CommentBox = styled.div`
@@ -68,7 +69,7 @@ const CommentBar = styled.div`
 height: 50px;
 width: 900px;
 background: #FFFFFF;
-border-bottom: 1px solid rgba(28, 101, 243, 0.3);
+border-bottom: 1px solid ${COLORS.Navy_100};
 `
 
 const TxtId = styled.div`
@@ -79,7 +80,7 @@ line-height: 14px;
 display: flex;
 align-items: center;
 text-align: center;
-color: #000000;
+color: ${COLORS.BLACK};
 `
 
 const CommentTxt = styled.div`
@@ -90,7 +91,7 @@ line-height: 14px;
 display: flex;
 align-items: center;
 text-align: center;
-color: #000000;
+color: ${COLORS.BLACK};
 `
 
 const CinnerBox = styled.div`
@@ -102,8 +103,7 @@ padding: 0px 0px 5px;
 gap: 10px;
 width: 900px;
 height: 50px;
-border-bottom: 1px solid rgba(28, 101, 243, 0.3);
-`
+border-bottom: 1px solid ${COLORS.Navy_100};`
 
 const DeleteBox = styled.button`
 display: flex;
@@ -113,8 +113,8 @@ padding: 5px;
 gap: 10px;
 position: absolute;
 left: 937px;
-background: #FFFFFF;
-border: 1px solid #1C65F3;
+background: ${COLORS.WHITE};
+border: 1px solid ${COLORS.Navy_100};
 border-radius: 5px;
 `
 
@@ -123,7 +123,7 @@ font-style: normal;
 font-weight: 400;
 font-size: 12px;
 line-height: 14px;
-color: #1C65F3;
+color: ${COLORS.Navy_100};
 `
 
 export default function TicketComment() {
@@ -157,10 +157,6 @@ export default function TicketComment() {
                            
                         </CinnerBox>
                     </CommentBox>
-                    // <div key={comment.id}>
-                    //     <p>{comment.text}</p>
-                    //     <button onClick={() => deleteComment(comment.id)}>Delete</button>
-                    // </div>
                 ))}
             </div>
         </All>

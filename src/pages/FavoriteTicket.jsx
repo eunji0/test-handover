@@ -5,7 +5,7 @@ import HeartSelectedSrc from "../svg/HeartSelect.svg";
 import HeartSrc from "../svg/Heart.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { favoriteState } from "../atoms/atoms";
-import { getTicketById } from '../categoryDummy';
+import { getWritingById } from '../categoryDummy';
 
 const All = styled.div`
 position: relative;
@@ -292,10 +292,8 @@ color: #1C65F3;
 
 export default function FavoriteTicket() {
     const favorites = useRecoilValue(favoriteState);
-    const tickets = favorites.map((ticket_id) => getTicketById(ticket_id));
+    const tickets = favorites.map((ticket_id) => getWritingById(ticket_id));
 
-    console.log(favorites);
-    console.log(tickets)
 
     return (
         <div>
