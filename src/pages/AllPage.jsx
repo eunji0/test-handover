@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import categoryDummy from "../categoryDummy";
 import moreSrc from "../svg/More.svg";
 import heartSelectedSrc from "../svg/heartSelect.svg";
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState, useRecoilCallback } from 'recoil';
 import { favoriteState, searchResultsState } from '../atoms/atoms';
 import { useNavigate } from "react-router-dom";
 import COLORS from "./styled/colors";
@@ -315,18 +315,6 @@ text-align: center;
 color: ${COLORS.BLACK};
 `
 
-const fetchMatches = async () => {
-    try {
-        const response = await axios.get('http://api/matches');
-        const matches = response.data;
-        console.log(matches); // 매칭글 데이터 콘솔 출력 예시
-        return matches;
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-};
-
 const AllPage = () => {
     const searchResults = useRecoilValue(searchResultsState);
     //categorydummy
@@ -335,19 +323,19 @@ const AllPage = () => {
     // 현재 보여지고 있는 아이템의 개수
     const [numVisibleItems, setNumVisibleItems] = useState(5);
     const [favorites, setFavorites] = useRecoilState(favoriteState);
-    const [matches, setMatches] = useState([]);
+    // const [matches, setMatches] = useState([]);
 
-    useEffect(() => {
-      axios.get('http://localhost:8080/api/matches')
-        .then(res => {
-          setMatches(res.data);
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }, []);
+    // useEffect(() => {
+    //   axios.get('http://localhost:8080/api/matches')
+    //     .then(res => {
+    //       setMatches(res.data);
+    //     })
+    //     .catch(err => {
+    //       console.error(err);
+    //     });
+    // }, []);
 
-    console.log(matches)
+    // console.log(matches)
 
 
     const categoryList =
@@ -408,6 +396,10 @@ const AllPage = () => {
             setFavorites(newFavorites);
         }
     };
+    
+    console.log(favorites)
+    
+    
 
     return (
         <div>

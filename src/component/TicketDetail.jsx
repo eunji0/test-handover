@@ -4,9 +4,11 @@ import modalBtnSrc from "../svg/ModalBtn.svg";
 import { useParams } from 'react-router-dom';
 import { getWritingById } from '../categoryDummy';
 import selectedHeart from "../svg/HeartSelect.svg";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import COLORS from "../pages/styled/colors";
 import Modal from "./Modal";
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { favoriteState, searchResultsState } from '../atoms/atoms';
 
 const Box = styled.div`
 display: flex;
@@ -278,81 +280,96 @@ height: 20px;
 
 
 export default function TicketDetail() {
-    const { ticket_id } = useParams();
-    const matching = getWritingById(ticket_id);
-    //임시 favorite
-    const [favorite, setFavorite] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+	const { ticket_id } = useParams();
+	const matching = getWritingById(ticket_id);
+	const [favorites, setFavorites] = useRecoilState(favoriteState);
+	const [showModal, setShowModal] = useState(false);
 
-    const handleModalClick = () => {
-        setShowModal(!showModal);
-    }
+	const handleModalClick = () => {
+		setShowModal(!showModal);
+	}
 
-    return (
-        <div>
+	// 하트 버튼 클릭 시 호출되는 함수
+	const handleFavoriteClick = (matchingId) => {
+	    if (favorites.includes(matchingId)) {
+	        // 이미 즐겨찾기에 추가된 티켓일 경우
+	        const newFavorites = favorites.filter((id) => id !== matchingId);
+	        setFavorites(newFavorites);
+	    } else {
+	        // 즐겨찾기에 추가되지 않은 티켓일 경우
+	        const newFavorites = [...favorites, matchingId];
+	        setFavorites(newFavorites);
+	    }
+	};
 
-            {matching && (
-                <Box>
-                    <InnerBox>
-                        <TopBox>
-                            <NameBox>
-                                <NameTxt>{matching.title}</NameTxt>
-                            </NameBox>
-                            <ItemBox>
-                                <ItemInBox>
-                                    <SellBox>
-                                        <SellTxt>{matching.state}</SellTxt>
-                                    </SellBox>
-                                    <div onClick={() => setFavorite(!favorite)}>
-                                        <HeartBox border={favorite == false ? `1px solid ${COLORS.GRAY}` : `1px solid ${COLORS.Navy_100}`}>
-                                            {favorite == false ? <Heartsvg alt="heart" src={HeartSrc} /> : <Heartsvg alt="selectHeart" src={selectedHeart} />}
-                                        </HeartBox>
-                                    </div>
-                                    <HeartBox border={`1px solid ${COLORS.Navy_100}`} onClick={handleModalClick}>
-                                        <img alt="modal" src={modalBtnSrc} />
-                                    </HeartBox>
-                                </ItemInBox>
+	return (
+		<div>
 
-                                {showModal && (
-                                    <Modal>
-                                    </Modal>
-                                )}
-                            </ItemBox>
-                        </TopBox>
-                        <DateBox>
+			{matching && (
+				<Box>
+					<InnerBox>
+						<TopBox>
+							<NameBox>
+								<NameTxt>{matching.title}</NameTxt>
+							</NameBox>
+							<ItemBox>
+								<ItemInBox>
+									<SellBox>
+										<SellTxt>{matching.state}</SellTxt>
+									</SellBox>
+									<div onClick={() => setFavorite(!favorite)}>
+										<HeartBox onClick={(event) => {
+											event.stopPropagation(); // 이벤트 버블링 방지
+											handleFavoriteClick(matching.id);
+										}} border={favorites == false ? `1px solid ${COLORS.GRAY}` : `1px solid ${COLORS.Navy_100}`}>
+											{favorites == false ? <Heartsvg alt="heart" src={HeartSrc} /> : <Heartsvg alt="selectHeart" src={selectedHeart} />}
+										</HeartBox>
+									</div>
+									<HeartBox border={`1px solid ${COLORS.Navy_100}`} onClick={handleModalClick}>
+										<img alt="modal" src={modalBtnSrc} />
+									</HeartBox>
+								</ItemInBox>
 
-                            <DateinnerBox>
-                                <DateTxt>
-                                    {matching.date}
-                                </DateTxt>
-                            </DateinnerBox>
-                            <DateinnerBox>
-                                <DateTxt>
-                                    {matching.location}
-                                </DateTxt>
-                            </DateinnerBox>
-                        </DateBox>
-                        <ContextBox>
-                            <Detail>
-                                <DetailBox>
-                                    {matching.content}
-                                </DetailBox>
-                                <ImportantBox>
-                                    {matching.important}
-                                </ImportantBox>
-                            </Detail>
-                            <BuyFrame>
-                                <PriceBox>
-                                    <PriceTxt>{matching.price}원</PriceTxt>
-                                </PriceBox>
-                                <BuyBox>
-                                    <BuyTxt>매 칭 하 기</BuyTxt>
-                                </BuyBox>
-                            </BuyFrame>
-                        </ContextBox>
-                    </InnerBox>
-                </Box>
-            )}
-        </div>
-    )
+								{showModal && (
+									<Modal>
+									</Modal>
+								)}
+							</ItemBox>
+						</TopBox>
+						<DateBox>
+
+							<DateinnerBox>
+								<DateTxt>
+									{matching.date}
+								</DateTxt>
+							</DateinnerBox>
+							<DateinnerBox>
+								<DateTxt>
+									{matching.location}
+								</DateTxt>
+							</DateinnerBox>
+						</DateBox>
+						<ContextBox>
+							<Detail>
+								<DetailBox>
+									{matching.content}
+								</DetailBox>
+								<ImportantBox>
+									{matching.important}
+								</ImportantBox>
+							</Detail>
+							<BuyFrame>
+								<PriceBox>
+									<PriceTxt>{matching.price}원</PriceTxt>
+								</PriceBox>
+								<BuyBox>
+									<BuyTxt>매 칭 하 기</BuyTxt>
+								</BuyBox>
+							</BuyFrame>
+						</ContextBox>
+					</InnerBox>
+				</Box>
+			)}
+		</div>
+	)
 }

@@ -7,12 +7,12 @@ import KidsPage from "./pages/KidsPage";
 import EtcPage from "./pages/EtcPage";
 import ElderyPage from "./pages/ElderlyPage";
 import PetPage from "./pages/PetPage";
-import MainPage from "./pages/MainPage";
 import DetailTicketPage from "./pages/DetailTicketPage";
 import ScrollToTop from "./component/ScrollToTop";
-import FavoriteTicket from "./pages/FavoriteTicket";
 import GlobalStyle from "./pages/styled/GlobalStyle";
-import { Introduction } from "./component/Introduction";
+import Introduction from "./component/Introduction";
+import MyPage from "./pages/myPage/myPage";
+import FavoriteTicket from "./pages/myPage/FavoriteMatching";
 
 export default function App() {
   return (
@@ -27,17 +27,19 @@ export default function App() {
             <Route path="/pet" element={<PetPage />} />
             <Route path="/kids" element={<KidsPage />} />
             <Route path="/etc" element={<EtcPage />} />
-            
+
           </Route>
           <Route element={<CategoryLayout />}>
-            <Route path="/detailticket/:ticket_id" element={
+            <Route path="/detailticket/:id" element={
               <>
                 <ScrollToTop />
                 <DetailTicketPage />
               </>
             } />
           </Route>
-          <Route path="/favorite" element={<FavoriteTicket />} />
+          <Route path="/mypage" element={<MyPage />} >
+          </Route>
+          {/* <Route path="/matches/:id/favorites" element={<FavoriteTicket />}/> */}
         </Routes>
       </BrowserRouter>
     </div>

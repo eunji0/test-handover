@@ -106,7 +106,7 @@ height: 37px;
 `
 
 
-const Header = ()=> {
+const Header = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [_, setSearchResults] = useRecoilState(searchResultsState);
@@ -165,15 +165,12 @@ const Header = ()=> {
                     </SearchBox>
 
                     <MypageBox>
-                        <div>
+                        <Link to="/mypage">
                             <SellTicket src={alarmSrc} />
-                        </div>
-                        <Link to="/favorite">
+                        </Link>
+                        <Link to="/mypage">
                             <Mypage src={MyPageSrc} />
                         </Link>
-                        {/* <div>
-                            <Mypage src={MyPageSrc} />
-                        </div> */}
                     </MypageBox>
                 </Allin>
             </All>
