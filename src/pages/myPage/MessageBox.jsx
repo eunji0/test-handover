@@ -3,12 +3,12 @@ import styled from "styled-components";
 import COLORS from "../styled/colors";
 
 
-const NoteBox = () => {
+const MessageBox = () => {
   return(
     <div>
-
+      쪽지함
     </div>
   )
 }
 
-export default NoteBox;
+export default MessageBox;

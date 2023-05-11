@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import COLORS from "../pages/styled/colors";
 import { Link } from "react-router-dom";
@@ -36,7 +36,7 @@ align-items: flex-start;
 padding: 5px 10px;
 gap: 10px;
 font-style: normal;
-font-weight: 400;
+font-weight: ${(props)=>props.fontWeight || 400};
 font-size: 16px;
 line-height: 19px;
 color: ${(props) => props.color || `${COLORS.BLACK}`};
@@ -47,15 +47,24 @@ text-decoration: none;
 `
 
 const SideBar = () => {
+  const [click, setClick] = useState(false);
+
+  const clickBtn = () => {
+    setClick(!click)
+  }
+
   return (
     <div>
       <Layout>
         <Box>
           notice
         </Box>
-        <MenuBox>
-          알림
-        </MenuBox>
+        <LinkStyle to="/mypage/noticed" onClick={clickBtn}>
+          <MenuBox color={click ? `${COLORS.Navy_100}` : `${COLORS.BLACK}`}
+          fontWeight={click ? 600 : 400}>
+            알림
+          </MenuBox>
+        </LinkStyle>
         <MenuBox>
           쪽지함
         </MenuBox>
@@ -71,11 +80,12 @@ const SideBar = () => {
         <MenuBox>
           내가 쓴 매칭글
         </MenuBox>
-        <LinkStyle to="/matches/:id/favorites">
-          <MenuBox>
+        <LinkStyle to="/matches/favorites"onClick={clickBtn}>
+          <MenuBox color={click ? `${COLORS.Navy_100}` : `${COLORS.BLACK}`}
+          fontWeight={click ? 600 : 400}>
             내가 찜한 매칭글
           </MenuBox>
-          </LinkStyle>
+        </LinkStyle>
         <Box>
           settings
         </Box>

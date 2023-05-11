@@ -12,7 +12,12 @@ import ScrollToTop from "./component/ScrollToTop";
 import GlobalStyle from "./pages/styled/GlobalStyle";
 import Introduction from "./component/Introduction";
 import MyPage from "./pages/myPage/myPage";
-import FavoriteTicket from "./pages/myPage/FavoriteMatching";
+import Noticed from "./pages/myPage/Noticed";
+import FavoriteMatching from "./pages/myPage/FavoriteMatching";
+import SideBar from "./component/SideBar";
+import MessageBox from "./pages/myPage/MessageBox";
+import ModifyProfile from "./pages/myPage/ModifyProfile";
+import MyMatching from "./pages/myPage/MyMatchings";
 
 export default function App() {
   return (
@@ -21,14 +26,15 @@ export default function App() {
       <BrowserRouter>
         <Header />
         <Routes>
+
           <Route element={<Layout />}>
             <Route path="/" element={<AllPage />} />
             <Route path="/elderly" element={<ElderyPage />} />
             <Route path="/pet" element={<PetPage />} />
             <Route path="/kids" element={<KidsPage />} />
             <Route path="/etc" element={<EtcPage />} />
-
           </Route>
+
           <Route element={<CategoryLayout />}>
             <Route path="/detailticket/:id" element={
               <>
@@ -37,9 +43,14 @@ export default function App() {
               </>
             } />
           </Route>
-          <Route path="/mypage" element={<MyPage />} >
+
+          <Route element={<MypageLayout/>}>
+            <Route path="/messages" element={<MessageBox />}/>
+            <Route path="/notice" element={<Noticed />}/>
+            <Route path="/modifyprofile" element={<ModifyProfile />}/>
+            <Route path="/favoritematching" element={<FavoriteMatching />}/>
+            <Route path="/mymatchings" element={<MyMatching />}/>
           </Route>
-          {/* <Route path="/matches/:id/favorites" element={<FavoriteTicket />}/> */}
         </Routes>
       </BrowserRouter>
     </div>
@@ -58,7 +69,7 @@ const Layout = () => {
   );
 }
 
-function CategoryLayout() {
+const CategoryLayout = () => {
   return (
     <>
       <Category />
@@ -67,4 +78,17 @@ function CategoryLayout() {
       </div>
     </>
   );
+}
+
+const MypageLayout = () => {
+  return (
+    <>
+    <MyPage>
+      <SideBar />
+      <div>
+        {<Outlet />}
+      </div>
+      </MyPage>
+    </>
+  )
 }

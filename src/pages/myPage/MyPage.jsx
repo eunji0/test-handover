@@ -5,7 +5,7 @@ import SideBar from "../../component/SideBar";
 import FavoriteMathcing from "./FavoriteMatching";
 import ModifyProfile from "./ModifyProfile";
 import MyMatching from "./MyMatchings";
-import NoteBox from "./NoteBox";
+import NoteBox from "./MessageBox";
 import Noticed from "./Noticed";
 
 const Layout = styled.div`
@@ -26,21 +26,21 @@ width: 100%;
 `
 
 const MyPage = () => {
-  // const location = useLocation();
 
   return (
     <div>
-      <Layout>
+      {/* <Layout>
         <SideBar />
         <InnerLayout>
-          <FavoriteMathcing/>
-          <ModifyProfile/>
-          <MyMatching/>
-          <NoteBox/>
-          <Noticed />
         </InnerLayout>
-      </Layout>
+      </Layout> */}
     </div>
   )
 }
 export default MyPage;
+
+
+{/* <ModifyProfile/>
+          <MyMatching/>
+          <NoteBox/>
+          <Noticed /> */}

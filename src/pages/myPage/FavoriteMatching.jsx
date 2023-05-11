@@ -1,8 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import MoreSrc from "../svg/More.svg";
-import HeartSelectedSrc from "../svg/HeartSelect.svg";
-import HeartSrc from "../svg/Heart.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { favoriteState } from "../../atoms/atoms";
 import { getWritingById } from '../../categoryDummy';

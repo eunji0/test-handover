@@ -165,10 +165,10 @@ const Header = () => {
                     </SearchBox>
 
                     <MypageBox>
-                        <Link to="/mypage">
+                        <Link to="/notice">
                             <SellTicket src={alarmSrc} />
                         </Link>
-                        <Link to="/mypage">
+                        <Link to="/favoritematching">
                             <Mypage src={MyPageSrc} />
                         </Link>
                     </MypageBox>
