@@ -5,6 +5,14 @@ import { favoriteState } from "../../atoms/atoms";
 import { getWritingById } from '../../categoryDummy';
 import COLORS from "../styled/colors";
 
+const Layout = styled.div`
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 50px 15px 10px;
+gap: 30px;
+width: 100%;
+`
 const All = styled.div`
 display: flex;
 flex-direction: column;
@@ -101,29 +109,29 @@ const FavoriteMatching = () => {
 
 
     return (
-        <div>
-            <All>
-                <BoxTitle>
-                    내가 찜한 매칭글
-                </BoxTitle>
+            <Layout>
+                <All>
+                    <BoxTitle>
+                        내가 찜한 매칭글
+                    </BoxTitle>
 
-                <ListBox>
-                    {matchings.length === 0 && <p>즐겨찾기에 추가된 티켓이 없습니다.</p>}
-                    {matchings.map((item, index) => (
-                        <MatchingBox key={index}>
-                            <MatchingLayout key={index} item={item}>
-                                <TitleBox>
-                                    {item.title}
-                                </TitleBox>
-                                <StateBox>
+                    <ListBox>
+                        {matchings.length === 0 && <p>즐겨찾기에 추가된 매칭글이 없습니다.</p>}
+                        {matchings.map((item, index) => (
+                            <MatchingBox key={index}>
+                                <MatchingLayout key={index} item={item}>
+                                    <TitleBox>
+                                        {item.title}
+                                    </TitleBox>
+                                    <StateBox>
 
-                                </StateBox>
-                            </MatchingLayout>
-                        </MatchingBox>
-                    ))}
-                </ListBox>
-            </All>
-        </div>
+                                    </StateBox>
+                                </MatchingLayout>
+                            </MatchingBox>
+                        ))}
+                    </ListBox>
+                </All>
+            </Layout>
     );
 }
 

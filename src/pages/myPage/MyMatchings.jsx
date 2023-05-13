@@ -1,7 +1,18 @@
 import React from "react";
 import styled from "styled-components";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { favoriteState } from "../../atoms/atoms";
+import { getWritingById } from '../../categoryDummy';
 import COLORS from "../styled/colors";
 
+const Layout = styled.div`
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 50px 15px 10px;
+gap: 30px;
+width: 100%;
+`
 const All = styled.div`
 display: flex;
 flex-direction: column;
@@ -92,31 +103,36 @@ letter-spacing: 0.15em;
 color: ${COLORS.Navy_100};
 `
 
-const MyMatching = () => {
-  return (
-    <div>
-        <All>
-            <BoxTitle>
-                내가 쓴 매칭글
-            </BoxTitle>
+const MyMatchings = () => {
+    const favorites = useRecoilValue(favoriteState);
+    const matchings = favorites.map((id) => getWritingById(id));
 
-            <ListBox>
-                {/* {matchings.map((item, index) => (
-                    <MatchingBox key={index}>
-                        <MatchingLayout key={index} item={item}>
-                            <TitleBox>
-                                {item.title}
-                            </TitleBox>
-                            <StateBox>
 
-                            </StateBox>
-                        </MatchingLayout>
-                    </MatchingBox>
-                ))} */}
-            </ListBox>
-        </All>
-    </div>
-);
+    return (
+            <Layout>
+                <All>
+                    <BoxTitle>
+                        내가 쓴 매칭글
+                    </BoxTitle>
+
+                    <ListBox>
+                        {matchings.length === 0 && <p>내가 쓴 매칭글이 없습니다.</p>}
+                        {matchings.map((item, index) => (
+                            <MatchingBox key={index}>
+                                <MatchingLayout key={index} item={item}>
+                                    <TitleBox>
+                                        {item.title}
+                                    </TitleBox>
+                                    <StateBox>
+
+                                    </StateBox>
+                                </MatchingLayout>
+                            </MatchingBox>
+                        ))}
+                    </ListBox>
+                </All>
+            </Layout>
+    );
 }
 
-export default MyMatching;
+export default MyMatchings;

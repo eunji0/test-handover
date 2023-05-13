@@ -11,13 +11,12 @@ import DetailTicketPage from "./pages/DetailTicketPage";
 import ScrollToTop from "./component/ScrollToTop";
 import GlobalStyle from "./pages/styled/GlobalStyle";
 import Introduction from "./component/Introduction";
-import MyPage from "./pages/myPage/myPage";
 import Noticed from "./pages/myPage/Noticed";
 import FavoriteMatching from "./pages/myPage/FavoriteMatching";
 import SideBar from "./component/SideBar";
 import MessageBox from "./pages/myPage/MessageBox";
 import ModifyProfile from "./pages/myPage/ModifyProfile";
-import MyMatching from "./pages/myPage/MyMatchings";
+import MyMatchings from "./pages/myPage/MyMatchings";
 
 export default function App() {
   return (
@@ -44,13 +43,14 @@ export default function App() {
             } />
           </Route>
 
-          <Route element={<MypageLayout/>}>
-            <Route path="/messages" element={<MessageBox />}/>
-            <Route path="/notice" element={<Noticed />}/>
-            <Route path="/modifyprofile" element={<ModifyProfile />}/>
-            <Route path="/favoritematching" element={<FavoriteMatching />}/>
-            <Route path="/mymatchings" element={<MyMatching />}/>
-          </Route>
+            <Route element={<MypageLayout />}>
+              <Route path="/messages" element={<MessageBox />} />
+              <Route path="/notice" element={<Noticed />} />
+              <Route path="/modifyprofile" element={<ModifyProfile />} />
+              <Route path="/favoritematching" element={<FavoriteMatching />} />
+              <Route path="/mymatchings" element={<MyMatchings />} />
+            </Route>
+
         </Routes>
       </BrowserRouter>
     </div>
@@ -82,13 +82,9 @@ const CategoryLayout = () => {
 
 const MypageLayout = () => {
   return (
-    <>
-    <MyPage>
+    <div style={{display: "flex", flexDirection:"row"}}>
       <SideBar />
-      <div>
-        {<Outlet />}
-      </div>
-      </MyPage>
-    </>
+          {<Outlet />}
+    </div>
   )
 }
