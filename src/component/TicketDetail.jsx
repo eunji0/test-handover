@@ -280,8 +280,8 @@ height: 20px;
 
 
 export default function TicketDetail() {
-	const { ticket_id } = useParams();
-	const matching = getWritingById(ticket_id);
+	const { id } = useParams();
+	const matching = getWritingById(id);
 	const [favorites, setFavorites] = useRecoilState(favoriteState);
 	const [showModal, setShowModal] = useState(false);
 
@@ -304,7 +304,6 @@ export default function TicketDetail() {
 
 	return (
 		<div>
-
 			{matching && (
 				<Box>
 					<InnerBox>
