@@ -9,6 +9,7 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import { favoriteState, searchResultsState } from '../atoms/atoms';
 import { useNavigate} from "react-router-dom";
 import COLORS from "./styled/colors";
+import axios from "axios";
 
 const All = styled.div`
 position: relative;
@@ -313,43 +314,33 @@ color: ${COLORS.BLACK};
 `
 
 const ElderlyPage=()=> {
-    const searchResults = useRecoilValue(searchResultsState);
-    const [sortedCategoryDummy, setSortedCategoryDummy] = useState([]);
     const [sortBy, setSortBy] = useState("date");
     const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [elderlyCategoryDummy, setElderlyCategoryDummy] = useState(categoryDummy.filter(category => category.category === "노인돌봄"));
     const [favorites, setFavorites] = useRecoilState(favoriteState);
-    
-    const categoryList =
-        searchResults.length > 0
-            ? sortBy === "lowPrice"
-                ? [...searchResults].sort((a, b) => a.price - b.price)
-                : sortBy === "highPrice"
-                    ? [...searchResults].sort((a, b) => b.price - a.price)
-                    : [...searchResults].sort(
-                        (a, b) => new Date(a.date) - new Date(b.date)
-                    )
-            : elderlyCategoryDummy;
-
-
+    const [matches, setMatches] = useState([]);
 
     useEffect(() => {
-        let sortedDummy;
-        if (sortBy === "lowPrice") {
-            sortedDummy = [...elderlyCategoryDummy].sort(
-                (a, b) => a.price - b.price
-            );
-        } else if (sortBy === "highPrice") {
-            sortedDummy = [...elderlyCategoryDummy].sort(
-                (a, b) => b.price - a.price
-            );
-        } else {
-            sortedDummy = [...elderlyCategoryDummy].sort(
-                (a, b) => new Date(a.date) - new Date(b.date)
-            );
+      axios.get('http://15.164.244.154/api/matches/category?category=노인돌봄', {
+        headers: {
+          'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDI4MzgyfQ.JIRyKJsGrs81WL6ZeHZriLnAs6LGMomY0FoeTTKBVDg1XPxaRk9-25LwTlhzghxNUk1JFD_KpBphsIq-H9mV5Q`
         }
-        setElderlyCategoryDummy(sortedDummy);
-    }, [categoryDummy, sortBy]);
+      })
+      .then(res => {
+        setMatches(res.data);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    }, []);
+
+    const categoryList =
+        matches.result && matches.result.data && matches.result.data.matches
+            ? sortBy === "lowPrice"
+                ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
+                : sortBy === "highPrice"
+                    ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
+                    : [...matches.result.data.matches].sort((a, b) => new Date(a.date) - new Date(b.date))
+            : [];
 
     const navigate = useNavigate();
 
@@ -400,11 +391,11 @@ const ElderlyPage=()=> {
                     </List>
 
                     <ListTicket>
-                        {searchResults.length === 0 && (
+                        {categoryList.length === 0 && (
                             <TxtNone>일치하는 티켓이 없습니다.</TxtNone>
                         )}
                         <>
-                            {elderlyCategoryDummy.slice(0, numVisibleItems).map((item, index) => (
+                            {categoryList.slice(0, numVisibleItems).map((item, index) => (
                                 <TicketBox key={index}
                                     onClick={() => handleTicketClick(item.id)}
                                 >
@@ -415,7 +406,7 @@ const ElderlyPage=()=> {
                                             </TicketNameBox>
                                             <SitBox>
                                                 <SellBox>
-                                                    <TxtSell>{item.state}</TxtSell>
+                                                    <TxtSell>판매중</TxtSell>
                                                 </SellBox>
                                                 <HeartBox onClick={(event) => {
                                                     event.stopPropagation(); // 이벤트 버블링 방지
@@ -429,16 +420,16 @@ const ElderlyPage=()=> {
                                         </BoxinTop>
                                         <BoxMidL>
                                             <LocationDateBox>
-                                                <TxtLocationDate>{item.title}</TxtLocationDate>
+                                                <TxtLocationDate>{item.ticketName}</TxtLocationDate>
                                             </LocationDateBox>
                                         </BoxMidL>
                                         <BoxinMid>
                                             <BoxMidL>
                                                 <LocationDateBox>
-                                                    <TxtLocationDate>{item.location}</TxtLocationDate>
+                                                    <TxtLocationDate>{item.address}</TxtLocationDate>
                                                 </LocationDateBox>
                                                 <LocationDateBox>
-                                                    <TxtLocationDate>{item.date}</TxtLocationDate>
+                                                    <TxtLocationDate>{item.startDate} ~ {item.endDate}</TxtLocationDate>
                                                 </LocationDateBox>
                                             </BoxMidL>
                                             <BoxMidR>
@@ -448,7 +439,7 @@ const ElderlyPage=()=> {
 
                                         <BoxBtm>
                                             <BoxTicketDetail>
-                                                <TxtDetail>{item.content}</TxtDetail>
+                                                <TxtDetail>{item.detailsContent}</TxtDetail>
                                             </BoxTicketDetail>
 
                                             <BoxBuy>

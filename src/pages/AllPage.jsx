@@ -2,11 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
 import { useState, useEffect } from "react";
-import categoryDummy from "../categoryDummy";
 import moreSrc from "../svg/More.svg";
 import heartSelectedSrc from "../svg/heartSelect.svg";
-import { useRecoilValue, useRecoilState, useRecoilCallback } from 'recoil';
-import { favoriteState, searchResultsState } from '../atoms/atoms';
 import { useNavigate } from "react-router-dom";
 import COLORS from "./styled/colors";
 import axios from "axios";
@@ -125,12 +122,11 @@ gap: 10px;
 `
 
 const SellBox = styled.div`
-/* width: 79px; */
 height: 39px;
 display: flex;
 flex-direction: row;
 align-items: center;
-padding: 10px 11px 10px 12px;
+padding: 10px 11px 8px 12px;
 gap: 10px;
 background: ${COLORS.WHITE};
 border: 1px solid ${COLORS.Navy_100};
@@ -316,58 +312,94 @@ color: ${COLORS.BLACK};
 `
 
 const AllPage = () => {
-    const searchResults = useRecoilValue(searchResultsState);
-    //categorydummy
-    const [sortedCategoryDummy, setSortedCategoryDummy] = useState([]);
     const [sortBy, setSortBy] = useState("date");
     // 현재 보여지고 있는 아이템의 개수
     const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [favorites, setFavorites] = useRecoilState(favoriteState);
-    // const [matches, setMatches] = useState([]);
+    const [favorites, setFavorites] = useState([]);
+    const [matches, setMatches] = useState([]);
+    const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDUzNzY5fQ.g10lfvr--Su5kR4gUJVLk9OqjVHlDwWB0ssyvi-VrJv5oRICfc-oCWFennnAVo9zPwUobyn7gC-unr186BXejg";
 
-    // useEffect(() => {
-    //   axios.get('http://localhost:8080/api/matches')
-    //     .then(res => {
-    //       setMatches(res.data);
-    //     })
-    //     .catch(err => {
-    //       console.error(err);
-    //     });
-    // }, []);
+    //데이터 API
+    useEffect(() => {
+        axios.get('http://15.164.244.154/api/matches', {
+            headers: {
+                'Authorization': `Bearer ${userToken}`
+            }
+        })
+            .then(res => {
+                setMatches(res.data);
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }, []);
 
-    // console.log(matches)
+    // 기존 즐겨찾기 목록
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            try {
+                const response = await axios.get(
+                    'http://15.164.244.154/api/matches/favorites',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${userToken}`,
+                        },
+                    }
+                );
+                setFavorites(response.data.result.data.matches.map((item) => item.id));
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
+        fetchFavorites();
+    }, []);
+
+
+    //     //즐겨찾기
+    //     const handleFavoriteClick = (matchingId) => {
+    //         setFavorites((favorites) => {
+    //             const isFavorite = favorites.includes(matchingId); // 매칭글이 즐겨찾기에 있는지 확인
+
+    //             if (isFavorite) {
+    //                 // 이미 즐겨찾기에 추가된 경우, 제거를 수행합니다.
+    //                 const newFavorites = favorites.filter((id) => id !== matchingId);
+    //                 setFavorites(newFavorites);
+    //             } else {
+    //                 // 즐겨찾기에 추가되지 않은 경우, 추가를 수행합니다.
+    //                 axios
+    //                     .post(
+    //                         `http://15.164.244.154/api/matches/${matchingId}/favorites`,
+    //                         {},
+    //                         {
+    //                             headers: {
+    //                                 Authorization: `Bearer ${userToken}`,
+    //                             },
+    //                         }
+    //                     )
+    //                     .then(() => {
+    //                         const newFavorites = [...favorites, matchingId];
+    //                         setFavorites(newFavorites);
+    //                     })
+    //                     .catch((err) => {
+    //                         console.error(err);
+    //                     });
+    //             }
+    //         });
+    //     };
+
+    // console.log(favorites)
 
     const categoryList =
-        searchResults.length > 0
+        matches.result && matches.result.data && matches.result.data.matches
             ? sortBy === "lowPrice"
-                ? [...searchResults].sort((a, b) => a.price - b.price)
+                ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
                 : sortBy === "highPrice"
-                    ? [...searchResults].sort((a, b) => b.price - a.price)
-                    : [...searchResults].sort(
-                        (a, b) => new Date(a.date) - new Date(b.date)
-                    )
-            : sortedCategoryDummy;
+                    ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
+                    : [...matches.result.data.matches].sort((a, b) => new Date(a.date) - new Date(b.date))
+            : [];
 
 
-
-    useEffect(() => {
-        let sortedDummy;
-        if (sortBy === "lowPrice") {
-            sortedDummy = [...categoryDummy].sort(
-                (a, b) => a.price - b.price
-            );
-        } else if (sortBy === "highPrice") {
-            sortedDummy = [...categoryDummy].sort(
-                (a, b) => b.price - a.price
-            );
-        } else {
-            sortedDummy = [...categoryDummy].sort(
-                (a, b) => new Date(a.date) - new Date(b.date)
-            );
-        }
-        setSortedCategoryDummy(sortedDummy);
-    }, [categoryDummy, sortBy]);
 
     const navigate = useNavigate();
 
@@ -396,10 +428,7 @@ const AllPage = () => {
             setFavorites(newFavorites);
         }
     };
-    
-    console.log(favorites)
-    
-    
+
 
     return (
         <div>
@@ -422,7 +451,7 @@ const AllPage = () => {
                     </List>
 
                     <ListTicket>
-                        {searchResults.length === 0 && (
+                        {categoryList.length === 0 && (
                             <TxtNone>일치하는 티켓이 없습니다.</TxtNone>
                         )}
                         <>
@@ -437,13 +466,13 @@ const AllPage = () => {
                                             </TicketNameBox>
                                             <SitBox>
                                                 <SellBox>
-                                                    <TxtSell>{item.state}</TxtSell>
+                                                    <TxtSell>판매중</TxtSell>
                                                 </SellBox>
                                                 <HeartBox onClick={(event) => {
                                                     event.stopPropagation(); // 이벤트 버블링 방지
                                                     handleFavoriteClick(item.id);
-                                                }} border={favorites.includes(item.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
-                                                    <img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectedSrc : HeartSrc} />
+                                                }} border={favorites ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
+                                                    <img style={{ width: "24px", height: "20px" }} src={favorites ? heartSelectedSrc : HeartSrc} />
                                                 </HeartBox>
 
 
@@ -451,16 +480,16 @@ const AllPage = () => {
                                         </BoxinTop>
                                         <BoxMidL>
                                             <LocationDateBox>
-                                                <TxtLocationDate>{item.title}</TxtLocationDate>
+                                                <TxtLocationDate>{item.ticketName}</TxtLocationDate>
                                             </LocationDateBox>
                                         </BoxMidL>
                                         <BoxinMid>
                                             <BoxMidL>
                                                 <LocationDateBox>
-                                                    <TxtLocationDate>{item.location}</TxtLocationDate>
+                                                    <TxtLocationDate>{item.address}</TxtLocationDate>
                                                 </LocationDateBox>
                                                 <LocationDateBox>
-                                                    <TxtLocationDate>{item.date}</TxtLocationDate>
+                                                    <TxtLocationDate>{item.startDate} ~ {item.endDate}</TxtLocationDate>
                                                 </LocationDateBox>
                                             </BoxMidL>
                                             <BoxMidR>
@@ -470,7 +499,7 @@ const AllPage = () => {
 
                                         <BoxBtm>
                                             <BoxTicketDetail>
-                                                <TxtDetail>{item.content}</TxtDetail>
+                                                <TxtDetail>{item.detailsContent}</TxtDetail>
                                             </BoxTicketDetail>
 
                                             <BoxBuy>

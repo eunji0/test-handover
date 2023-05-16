@@ -23,7 +23,7 @@ const CategoryBox = styled.div.attrs({ type: "button" })`
 display: flex;
 flex-direction: row;
 align-items: flex-start;
-padding: 10px 17px 10px 20px;
+padding: 10px 17px 7px 20px;
 gap: 10px;
 background: ${COLORS.WHITE};
 border: ${(props)=>props.border || `1px solid ${COLORS.Navy_100}`};

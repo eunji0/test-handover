@@ -67,12 +67,12 @@ const SideBar = () => {
     {
       id: 4,
       txt: "내가 쓴 매칭글",
-      to: 'favoritematching'
+      to: 'mymatchings'
     },
     {
       id: 5,
       txt: "내가 찜한 매칭글",
-      to: 'mymatchings'
+      to: 'favoritematching'
     }
   ];
 

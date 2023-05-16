@@ -19,6 +19,7 @@ flex-direction: column;
 align-items: center;
 padding: 0px;
 gap: 20px;
+width: 100%;
 `
 
 const BoxTitle = styled.div`
@@ -44,6 +45,7 @@ flex-direction: column;
 align-items: center;
 padding: 10px;
 gap: 20px;
+width: 100%;
 `
 
 const MatchingBox = styled.div`
@@ -63,6 +65,7 @@ flex-direction: row;
 justify-content: space-between;
 align-items: flex-start;
 padding: 10px;
+width: 100%;
 `
 
 const TitleBox = styled.div`
@@ -122,9 +125,9 @@ const MyMatchings = () => {
                                 <MatchingLayout key={index} item={item}>
                                     <TitleBox>
                                         {item.title}
-                                    </TitleBox>
+                                    </TitleBox> 
                                     <StateBox>
-
+                                        {item.state}
                                     </StateBox>
                                 </MatchingLayout>
                             </MatchingBox>

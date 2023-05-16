@@ -1,9 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { favoriteState } from "../../atoms/atoms";
-import { getWritingById } from '../../categoryDummy';
 import COLORS from "../styled/colors";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Layout = styled.div`
 display: flex;
@@ -19,6 +18,7 @@ flex-direction: column;
 align-items: center;
 padding: 0px;
 gap: 20px;
+width: 100%;
 `
 
 const BoxTitle = styled.div`
@@ -44,6 +44,7 @@ flex-direction: column;
 align-items: center;
 padding: 10px;
 gap: 20px;
+width: 100%;
 `
 
 const MatchingBox = styled.div`
@@ -59,6 +60,7 @@ border-radius: 10px;
 
 const MatchingLayout = styled.div`
 display: flex;
+width: 100%;
 flex-direction: row;
 justify-content: space-between;
 align-items: flex-start;
@@ -104,35 +106,51 @@ color: ${COLORS.Navy_100};
 `
 
 const FavoriteMatching = () => {
-    const favorites = useRecoilValue(favoriteState);
-    const matchings = favorites.map((id) => getWritingById(id));
+    const [myFavorites, setMyFavorites] = useState([]);
 
+    useEffect(() => {
+        const favorites = async () => {
+          try {
+            const response = await axios.get('http://15.164.244.154/api/matches/favorites', {
+                headers: {
+                    'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDUzNzY5fQ.g10lfvr--Su5kR4gUJVLk9OqjVHlDwWB0ssyvi-VrJv5oRICfc-oCWFennnAVo9zPwUobyn7gC-unr186BXejg`
+                }
+            });
+            setMyFavorites(response.data);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+    
+        favorites();
+      }, []);
 
-    return (
-            <Layout>
-                <All>
-                    <BoxTitle>
-                        내가 찜한 매칭글
-                    </BoxTitle>
+      console.log(myFavorites)
 
-                    <ListBox>
-                        {matchings.length === 0 && <p>즐겨찾기에 추가된 매칭글이 없습니다.</p>}
-                        {matchings.map((item, index) => (
-                            <MatchingBox key={index}>
-                                <MatchingLayout key={index} item={item}>
-                                    <TitleBox>
-                                        {item.title}
-                                    </TitleBox>
-                                    <StateBox>
-
-                                    </StateBox>
-                                </MatchingLayout>
-                            </MatchingBox>
-                        ))}
-                    </ListBox>
-                </All>
-            </Layout>
-    );
+      return (
+        <Layout>
+          <All>
+            <BoxTitle>내가 찜한 매칭글</BoxTitle>
+            <ListBox>
+              {myFavorites.length === 0 ? (
+                <p>즐겨찾기에 추가된 매칭글이 없습니다.</p>
+              ) : (
+                myFavorites.result &&
+                myFavorites.result.data &&
+                myFavorites.result.data.matches &&
+                myFavorites.result.data.matches.map((item, index) => (
+                  <MatchingBox key={index}>
+                    <MatchingLayout key={index} item={item}>
+                      <TitleBox>{item.ticketName}</TitleBox>
+                      <StateBox>판매중</StateBox>
+                    </MatchingLayout>
+                  </MatchingBox>
+                ))
+              )}
+            </ListBox>
+          </All>
+        </Layout>
+      );
 }
 
 export default FavoriteMatching;

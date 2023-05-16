@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import queryString from "query-string";
 import COLORS from "../pages/styled/colors";
 import alarmSrc from "../svg/alarm.svg";
+import axios from "axios";
 
 const All = styled.div`
 position: relative;
@@ -107,77 +108,62 @@ height: 37px;
 
 
 const Header = () => {
-
     const [searchTerm, setSearchTerm] = useState('');
-    const [_, setSearchResults] = useRecoilState(searchResultsState);
+    const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDUzNzY5fQ.g10lfvr--Su5kR4gUJVLk9OqjVHlDwWB0ssyvi-VrJv5oRICfc-oCWFennnAVo9zPwUobyn7gC-unr186BXejg";
     const navigate = useNavigate();
-
-    // 검색 필터링 함수
-    const filterResults = (searchTerm) => {
-        const filteredData = categoryDummy.filter((item) =>
-            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.location.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setSearchResults(filteredData);
-    };
-
-    // 검색어 유지
-    useEffect(() => {
-        const queryParams = queryString.parse(location.search);
-        const initialSearchTerm = queryParams.q || '';
-        setSearchTerm(initialSearchTerm);
-    }, [location.search]);
-
-    // 검색 결과 필터링
-    useEffect(() => {
-        filterResults(searchTerm);
-    }, [searchTerm, setSearchResults]);
-
-    const handleSearch = (event) => {
+  
+    const handleSearch = async (event) => {
         event.preventDefault();
+      
+        try {
+          // API 요청 보내기
+          const response = await axios.get(`http://15.164.244.154/api/search?keyword=${searchTerm}`, {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          });
+          // 검색 결과 설정
+          setSearchTerm(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
 
-        filterResults(searchTerm);
-        // URL 변경
-        const queryParam = queryString.stringify({ q: searchTerm });
-        navigate(`/?${queryParam}`, { replace: true });
-    };
-
+    // console.log(searchTerm)
+  
     //카테고리버튼 리셋
     const resetSelectedButton = () => {
-        localStorage.setItem("selectedButton", null);
-        setSelectedButton(null);
+      localStorage.setItem('selectedButton', null);
+      setSelectedButton(null);
     };
-
-
+  
     return (
-        <div>
-            <All>
-                <Allin>
-                    <LogoLink to="/" onClick={resetSelectedButton}>
-                        <Logo src={logoSrc} />
-                    </LogoLink>
-
-                    <SearchBox onSubmit={handleSearch}>
-                        <Searchinput type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-                        <SearchBtn type="submit" onSubmit={handleSearch}>
-                            <Searchimg src={SearchSrc} />
-                        </SearchBtn>
-                    </SearchBox>
-
-                    <MypageBox>
-                        <Link to="/notice">
-                            <SellTicket src={alarmSrc} />
-                        </Link>
-                        <Link to="/favoritematching">
-                            <Mypage src={MyPageSrc} />
-                        </Link>
-                    </MypageBox>
-                </Allin>
-            </All>
-
-        </div>
-
-    )
-}
-
-export default Header;
+      <div>
+        <All>
+          <Allin>
+            <LogoLink to="/" onClick={resetSelectedButton}>
+              <Logo src={logoSrc} />
+            </LogoLink>
+  
+            <SearchBox onSubmit={handleSearch}>
+              <Searchinput type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <SearchBtn type="submit" onSubmit={handleSearch}>
+                <Searchimg src={SearchSrc} />
+              </SearchBtn>
+            </SearchBox>
+  
+            <MypageBox>
+              <Link to="/notice">
+                <SellTicket src={alarmSrc} />
+              </Link>
+              <Link to="/favoritematching">
+                <Mypage src={MyPageSrc} />
+              </Link>
+            </MypageBox>
+          </Allin>
+        </All>
+      </div>
+    );
+  };
+  
+  export default Header;
