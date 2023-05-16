@@ -7,8 +7,9 @@ import heartSelectedSrc from "../svg/heartSelect.svg";
 import { useNavigate } from "react-router-dom";
 import COLORS from "./styled/colors";
 import axios from "axios";
-
-
+import { getMatches } from '../../api/api';
+import { getFavoriteMatches } from "../../api/api";
+import { toggleFavoriteMatch } from "../../api/api";
 
 const All = styled.div`
 position: relative;
@@ -312,213 +313,198 @@ color: ${COLORS.BLACK};
 `
 
 const AllPage = () => {
-    const [sortBy, setSortBy] = useState("date");
-    // 현재 보여지고 있는 아이템의 개수
-    const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [favorites, setFavorites] = useState([]);
-    const [matches, setMatches] = useState([]);
-    const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDUzNzY5fQ.g10lfvr--Su5kR4gUJVLk9OqjVHlDwWB0ssyvi-VrJv5oRICfc-oCWFennnAVo9zPwUobyn7gC-unr186BXejg";
-
-    //데이터 API
-    useEffect(() => {
-        axios.get('http://15.164.244.154/api/matches', {
-            headers: {
-                'Authorization': `Bearer ${userToken}`
-            }
-        })
-            .then(res => {
-                setMatches(res.data);
-            })
-            .catch(err => {
-                console.error(err);
-            });
-    }, []);
-
-    // 기존 즐겨찾기 목록
-    useEffect(() => {
-        const fetchFavorites = async () => {
-            try {
-                const response = await axios.get(
-                    'http://15.164.244.154/api/matches/favorites',
-                    {
-                        headers: {
-                            Authorization: `Bearer ${userToken}`,
-                        },
-                    }
-                );
-                setFavorites(response.data.result.data.matches.map((item) => item.id));
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchFavorites();
-    }, []);
+	const [sortBy, setSortBy] = useState("date");
+	const [numVisibleItems, setNumVisibleItems] = useState(5);
+	const [favorites, setFavorites] = useState([]);
+	const [matches, setMatches] = useState([]);
+	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDg4OTE4fQ.3sJNScI7PrxyHmc5xEaeWyrN_zTw2x4gcoLlT7U2PahXwMYDsr3oMulYuTPWBajtIg-cmFbVs1goeZOSLZvU2g";
 
 
-    //     //즐겨찾기
-    //     const handleFavoriteClick = (matchingId) => {
-    //         setFavorites((favorites) => {
-    //             const isFavorite = favorites.includes(matchingId); // 매칭글이 즐겨찾기에 있는지 확인
-
-    //             if (isFavorite) {
-    //                 // 이미 즐겨찾기에 추가된 경우, 제거를 수행합니다.
-    //                 const newFavorites = favorites.filter((id) => id !== matchingId);
-    //                 setFavorites(newFavorites);
-    //             } else {
-    //                 // 즐겨찾기에 추가되지 않은 경우, 추가를 수행합니다.
-    //                 axios
-    //                     .post(
-    //                         `http://15.164.244.154/api/matches/${matchingId}/favorites`,
-    //                         {},
-    //                         {
-    //                             headers: {
-    //                                 Authorization: `Bearer ${userToken}`,
-    //                             },
-    //                         }
-    //                     )
-    //                     .then(() => {
-    //                         const newFavorites = [...favorites, matchingId];
-    //                         setFavorites(newFavorites);
-    //                     })
-    //                     .catch((err) => {
-    //                         console.error(err);
-    //                     });
-    //             }
-    //         });
-    //     };
-
-    // console.log(favorites)
-
-    const categoryList =
-        matches.result && matches.result.data && matches.result.data.matches
-            ? sortBy === "lowPrice"
-                ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
-                : sortBy === "highPrice"
-                    ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
-                    : [...matches.result.data.matches].sort((a, b) => new Date(a.date) - new Date(b.date))
-            : [];
+	//데이터 API
+	useEffect(() => {
+		getMatches(userToken)
+			.then(res => {
+				setMatches(res.data);
+			})
+			.catch(err => {
+				console.error(err);
+			});
+	}, []);
 
 
 
-    const navigate = useNavigate();
+	// 기존 즐겨찾기 목록
+	useEffect(() => {
+		const favorites = async () => {
+			try {
+				const response = await getFavoriteMatches(userToken);
+				setFavorites(response.data.result.data.matches.map((item) => item.id));
+			} catch (error) {
+				console.error(error);
+			}
+		};
 
-    const handleTicketClick = (matchingId) => {
-        navigate(`/detailticket/${matchingId}`);
-    }
-
-    const handleClick = (sortType) => {
-        setSortBy(sortType);
-    };
-
-    const handleMoreButtonClick = () => {
-        setNumVisibleItems(numVisibleItems + 5);
-        // 5개씩 더 보여줌
-    };
-
-    // 하트 버튼 클릭 시 호출되는 함수
-    const handleFavoriteClick = (matchingId) => {
-        if (favorites.includes(matchingId)) {
-            // 이미 즐겨찾기에 추가된 티켓일 경우
-            const newFavorites = favorites.filter((id) => id !== matchingId);
-            setFavorites(newFavorites);
-        } else {
-            // 즐겨찾기에 추가되지 않은 티켓일 경우
-            const newFavorites = [...favorites, matchingId];
-            setFavorites(newFavorites);
-        }
-    };
+		favorites();
+	}, []);
 
 
-    return (
-        <div>
-            <All>
-                <Allin>
-                    <List>
-                        <ListBox>
-                            <ListTxt type="button" onClick={() => handleClick("date")}>
-                                날짜순
-                            </ListTxt>
-                            <ListTxt>|</ListTxt>
-                            <ListTxt type="button" onClick={() => handleClick("lowPrice")}>
-                                가격낮은순
-                            </ListTxt>
-                            <ListTxt>|</ListTxt>
-                            <ListTxt type="button" onClick={() => handleClick('highPrice')}>
-                                가격높은순
-                            </ListTxt>
-                        </ListBox>
-                    </List>
+	// 기존 즐겨찾기 목록
+	useEffect(() => {
+		const favorites = async () => {
+			try {
+				const response = await getFavoriteMatches(userToken);
+				setFavorites(response.data.result.data.matches.map((item) => item.id));
+			} catch (error) {
+				console.error(error);
+			}
+		};
 
-                    <ListTicket>
-                        {categoryList.length === 0 && (
-                            <TxtNone>일치하는 티켓이 없습니다.</TxtNone>
-                        )}
-                        <>
-                            {categoryList.slice(0, numVisibleItems).map((item, index) => (
-                                <TicketBox key={index}
-                                    onClick={() => handleTicketClick(item.id)}
-                                >
-                                    <ListTicketBox key={item.seller_ID}>
-                                        <BoxinTop>
-                                            <TicketNameBox>
-                                                <TxtTicketName>{item.category}</TxtTicketName>
-                                            </TicketNameBox>
-                                            <SitBox>
-                                                <SellBox>
-                                                    <TxtSell>판매중</TxtSell>
-                                                </SellBox>
-                                                <HeartBox onClick={(event) => {
-                                                    event.stopPropagation(); // 이벤트 버블링 방지
-                                                    handleFavoriteClick(item.id);
-                                                }} border={favorites ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
-                                                    <img style={{ width: "24px", height: "20px" }} src={favorites ? heartSelectedSrc : HeartSrc} />
-                                                </HeartBox>
+		favorites();
+	}, []);
 
 
-                                            </SitBox>
-                                        </BoxinTop>
-                                        <BoxMidL>
-                                            <LocationDateBox>
-                                                <TxtLocationDate>{item.ticketName}</TxtLocationDate>
-                                            </LocationDateBox>
-                                        </BoxMidL>
-                                        <BoxinMid>
-                                            <BoxMidL>
-                                                <LocationDateBox>
-                                                    <TxtLocationDate>{item.address}</TxtLocationDate>
-                                                </LocationDateBox>
-                                                <LocationDateBox>
-                                                    <TxtLocationDate>{item.startDate} ~ {item.endDate}</TxtLocationDate>
-                                                </LocationDateBox>
-                                            </BoxMidL>
-                                            <BoxMidR>
-                                                <TxtPrice>{item.price}원</TxtPrice>
-                                            </BoxMidR>
-                                        </BoxinMid>
+	// 하트 버튼 클릭 시 호출되는 함수
+	const handleFavoriteClick = (matchingId) => {
+		if (favorites.includes(matchingId)) {
+			// 이미 즐겨찾기에 추가된 티켓일 경우
+			toggleFavoriteMatch(userToken, matchingId)
+				.then(() => {
+					const newFavorites = favorites.filter((id) => id !== matchingId);
+					setFavorites(newFavorites);
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		} else {
+			// 즐겨찾기에 추가되지 않은 티켓일 경우
+			toggleFavoriteMatch(userToken, matchingId)
+				.then(() => {
+					const newFavorites = [...favorites, matchingId];
+					setFavorites(newFavorites);
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		}
+	};
 
-                                        <BoxBtm>
-                                            <BoxTicketDetail>
-                                                <TxtDetail>{item.detailsContent}</TxtDetail>
-                                            </BoxTicketDetail>
 
-                                            <BoxBuy>
-                                                <TxtBuy>매 칭 하 기</TxtBuy>
-                                            </BoxBuy>
-                                        </BoxBtm>
-                                    </ListTicketBox>
-                                </TicketBox>
-                            ))}
-                        </>
+	//날짜순, 가격순 나열
+	const categoryList =
+		matches.result && matches.result.data && matches.result.data.matches
+			? sortBy === "lowPrice"
+				? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
+				: sortBy === "highPrice"
+					? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
+					: [...matches.result.data.matches].sort((a, b) => new Date(a.date) - new Date(b.date))
+			: [];
 
-                        <BoxMore type="button" onClick={handleMoreButtonClick}>
-                            <img src={moreSrc} />
-                        </BoxMore>
-                    </ListTicket>
-                </Allin>
-            </All>
-        </div>
-    )
+	const handleClick = (sortType) => {
+		setSortBy(sortType);
+	};
+
+
+	const navigate = useNavigate();
+
+	const handleTicketClick = (matchingId) => {
+		navigate(`/detailticket/${matchingId}`);
+	}
+
+	//more 버튼
+	const handleMoreButtonClick = () => {
+		setNumVisibleItems(numVisibleItems + 5);
+	};
+
+
+	return (
+		<div>
+			<All>
+				<Allin>
+					<List>
+						<ListBox>
+							<ListTxt type="button" onClick={() => handleClick("date")}>
+								날짜순
+							</ListTxt>
+							<ListTxt>|</ListTxt>
+							<ListTxt type="button" onClick={() => handleClick("lowPrice")}>
+								가격낮은순
+							</ListTxt>
+							<ListTxt>|</ListTxt>
+							<ListTxt type="button" onClick={() => handleClick('highPrice')}>
+								가격높은순
+							</ListTxt>
+						</ListBox>
+					</List>
+
+					<ListTicket>
+						{categoryList.length === 0 && (
+							<TxtNone>일치하는 티켓이 없습니다.</TxtNone>
+						)}
+						<>
+							{categoryList.slice(0, numVisibleItems).map((item, index) => (
+								<TicketBox key={index}
+									onClick={() => handleTicketClick(item.id)}
+								>
+									<ListTicketBox key={item.seller_ID}>
+										<BoxinTop>
+											<TicketNameBox>
+												<TxtTicketName>{item.category}</TxtTicketName>
+											</TicketNameBox>
+											<SitBox>
+												<SellBox>
+													<TxtSell>판매중</TxtSell>
+												</SellBox>
+												<HeartBox onClick={(event) => {
+													event.stopPropagation(); // 이벤트 버블링 방지
+													handleFavoriteClick(item.id);
+												}} border={favorites.includes(item.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
+													<img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectedSrc : HeartSrc} />
+												</HeartBox>
+
+
+											</SitBox>
+										</BoxinTop>
+										<BoxMidL>
+											<LocationDateBox>
+												<TxtLocationDate>{item.ticketName}</TxtLocationDate>
+											</LocationDateBox>
+										</BoxMidL>
+										<BoxinMid>
+											<BoxMidL>
+												<LocationDateBox>
+													<TxtLocationDate>{item.address}</TxtLocationDate>
+												</LocationDateBox>
+												<LocationDateBox>
+													<TxtLocationDate>{item.startDate} ~ {item.endDate}</TxtLocationDate>
+												</LocationDateBox>
+											</BoxMidL>
+											<BoxMidR>
+												<TxtPrice>{item.price}원</TxtPrice>
+											</BoxMidR>
+										</BoxinMid>
+
+										<BoxBtm>
+											<BoxTicketDetail>
+												<TxtDetail>{item.detailsContent}</TxtDetail>
+											</BoxTicketDetail>
+
+											<BoxBuy>
+												<TxtBuy>매 칭 하 기</TxtBuy>
+											</BoxBuy>
+										</BoxBtm>
+									</ListTicketBox>
+								</TicketBox>
+							))}
+						</>
+
+						<BoxMore type="button" onClick={handleMoreButtonClick}>
+							<img src={moreSrc} />
+						</BoxMore>
+					</ListTicket>
+				</Allin>
+			</All>
+		</div>
+	)
 }
 
 export default AllPage;

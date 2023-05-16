@@ -96,7 +96,6 @@ const SideBar = () => {
     setSelectedButton(buttonId + 1);
   }, [location.pathname, categoryTxt]);
 
-  console.log(selectedButton);
 
   return (
     <div>

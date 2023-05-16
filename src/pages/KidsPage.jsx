@@ -7,9 +7,11 @@ import moreSrc from "../svg/More.svg";
 import heartSelectedSrc from "../svg/heartSelect.svg";
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { favoriteState, searchResultsState } from '../atoms/atoms';
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import COLORS from "./styled/colors";
-import axios from "axios";
+import { getKidsMatches } from "../../api/api";
+import { getFavoriteMatches } from "../../api/api";
+import { toggleFavoriteMatch } from "../../api/api";
 
 const All = styled.div`
 position: relative;
@@ -323,18 +325,15 @@ const KidsPage = () => {
     const [matches, setMatches] = useState([]);
 
     useEffect(() => {
-      axios.get('http://15.164.244.154/api/matches/category?category=아이돌봄', {
-        headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDI4MzgyfQ.JIRyKJsGrs81WL6ZeHZriLnAs6LGMomY0FoeTTKBVDg1XPxaRk9-25LwTlhzghxNUk1JFD_KpBphsIq-H9mV5Q`
-        }
-      })
-      .then(res => {
-        setMatches(res.data);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+        getKidsMatches(userToken)
+            .then(res => {
+                setMatches(res.data);
+            })
+            .catch(err => {
+                console.error(err);
+            });
     }, []);
+
 
     const categoryList =
         matches.result && matches.result.data && matches.result.data.matches
@@ -348,7 +347,7 @@ const KidsPage = () => {
 
     const navigate = useNavigate();
 
-    const handleTicketClick=(matchingId)=> {
+    const handleTicketClick = (matchingId) => {
         navigate(`/detailticket/${matchingId}`);
     }
 
@@ -361,16 +360,42 @@ const KidsPage = () => {
         // 5개씩 더 보여줌
     };
 
+    // 기존 즐겨찾기 목록
+    useEffect(() => {
+        const favorites = async () => {
+            try {
+                const response = await getFavoriteMatches(userToken);
+                setFavorites(response.data.result.data.matches.map((item) => item.id));
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        favorites();
+    }, []);
+
     // 하트 버튼 클릭 시 호출되는 함수
     const handleFavoriteClick = (matchingId) => {
         if (favorites.includes(matchingId)) {
             // 이미 즐겨찾기에 추가된 티켓일 경우
-            const newFavorites = favorites.filter((id) => id !== matchingId);
-            setFavorites(newFavorites);
+            toggleFavoriteMatch(userToken, matchingId)
+                .then(() => {
+                    const newFavorites = favorites.filter((id) => id !== matchingId);
+                    setFavorites(newFavorites);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
         } else {
             // 즐겨찾기에 추가되지 않은 티켓일 경우
-            const newFavorites = [...favorites, matchingId];
-            setFavorites(newFavorites);
+            toggleFavoriteMatch(userToken, matchingId)
+                .then(() => {
+                    const newFavorites = [...favorites, matchingId];
+                    setFavorites(newFavorites);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
         }
     };
 

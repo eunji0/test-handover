@@ -106,51 +106,52 @@ color: ${COLORS.Navy_100};
 `
 
 const FavoriteMatching = () => {
-    const [myFavorites, setMyFavorites] = useState([]);
+  const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDg4OTE4fQ.3sJNScI7PrxyHmc5xEaeWyrN_zTw2x4gcoLlT7U2PahXwMYDsr3oMulYuTPWBajtIg-cmFbVs1goeZOSLZvU2g";
+  const [myFavorites, setMyFavorites] = useState([]);
 
-    useEffect(() => {
-        const favorites = async () => {
-          try {
-            const response = await axios.get('http://15.164.244.154/api/matches/favorites', {
-                headers: {
-                    'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDUzNzY5fQ.g10lfvr--Su5kR4gUJVLk9OqjVHlDwWB0ssyvi-VrJv5oRICfc-oCWFennnAVo9zPwUobyn7gC-unr186BXejg`
-                }
-            });
-            setMyFavorites(response.data);
-          } catch (error) {
-            console.error(error);
+  useEffect(() => {
+    const favorites = async () => {
+      try {
+        const response = await axios.get('http://15.164.244.154/api/matches/favorites', {
+          headers: {
+            'Authorization': `Bearer ${userToken}`
           }
-        };
-    
-        favorites();
-      }, []);
+        });
+        setMyFavorites(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-      console.log(myFavorites)
+    favorites();
+  }, []);
 
-      return (
-        <Layout>
-          <All>
-            <BoxTitle>내가 찜한 매칭글</BoxTitle>
-            <ListBox>
-              {myFavorites.length === 0 ? (
-                <p>즐겨찾기에 추가된 매칭글이 없습니다.</p>
-              ) : (
-                myFavorites.result &&
-                myFavorites.result.data &&
-                myFavorites.result.data.matches &&
-                myFavorites.result.data.matches.map((item, index) => (
-                  <MatchingBox key={index}>
-                    <MatchingLayout key={index} item={item}>
-                      <TitleBox>{item.ticketName}</TitleBox>
-                      <StateBox>판매중</StateBox>
-                    </MatchingLayout>
-                  </MatchingBox>
-                ))
-              )}
-            </ListBox>
-          </All>
-        </Layout>
-      );
+  console.log(myFavorites)
+
+  return (
+    <Layout>
+      <All>
+        <BoxTitle>내가 찜한 매칭글</BoxTitle>
+        <ListBox>
+          {myFavorites.length === 0 ? (
+            <p>즐겨찾기에 추가된 매칭글이 없습니다.</p>
+          ) : (
+            myFavorites.result &&
+            myFavorites.result.data &&
+            myFavorites.result.data.matches &&
+            myFavorites.result.data.matches.map((item, index) => (
+              <MatchingBox key={index}>
+                <MatchingLayout key={index} item={item}>
+                  <TitleBox>{item.ticketName}</TitleBox>
+                  <StateBox>판매중</StateBox>
+                </MatchingLayout>
+              </MatchingBox>
+            ))
+          )}
+        </ListBox>
+      </All>
+    </Layout>
+  );
 }
 
 export default FavoriteMatching;

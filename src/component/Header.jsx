@@ -109,9 +109,9 @@ height: 37px;
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDUzNzY5fQ.g10lfvr--Su5kR4gUJVLk9OqjVHlDwWB0ssyvi-VrJv5oRICfc-oCWFennnAVo9zPwUobyn7gC-unr186BXejg";
-    const navigate = useNavigate();
-  
+    const [searchResult, setSearchResult] = useState([]);
+    const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDg4OTE4fQ.3sJNScI7PrxyHmc5xEaeWyrN_zTw2x4gcoLlT7U2PahXwMYDsr3oMulYuTPWBajtIg-cmFbVs1goeZOSLZvU2g";
+
     const handleSearch = async (event) => {
         event.preventDefault();
       
@@ -123,13 +123,14 @@ const Header = () => {
             },
           });
           // 검색 결과 설정
-          setSearchTerm(response.data);
+          const searchData = response.data;
+          setSearchResult(searchData)
         } catch (error) {
           console.error(error);
         }
       };
-
-    // console.log(searchTerm)
+      
+    console.log(searchResult)
   
     //카테고리버튼 리셋
     const resetSelectedButton = () => {
