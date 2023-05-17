@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import COLORS from "../pages/styled/colors";
 import Modal from "./Modal";
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { favoriteState, searchResultsState } from '../atoms/atoms';
+import { favoriteState } from '../atoms/atoms';
 
 const Box = styled.div`
 display: flex;

@@ -2,16 +2,14 @@ import React from "react";
 import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
 import { useState, useEffect } from "react";
-import categoryDummy from "../categoryDummy";
 import moreSrc from "../svg/More.svg";
 import heartSelectedSrc from "../svg/heartSelect.svg";
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { favoriteState, searchResultsState } from '../atoms/atoms';
 import { useNavigate } from "react-router-dom";
 import COLORS from "./styled/colors";
-import { getElderlyMatches } from "../../api/api";
-import { getFavoriteMatches } from "../../api/api";
-import { toggleFavoriteMatch } from "../../api/api";
+import { getElderlyMatches } from "../api/api";
+import { getFavoriteMatches } from "../api/api";
+import { toggleFavoriteMatch } from "../api/api";
 
 
 const All = styled.div`
@@ -317,10 +315,11 @@ color: ${COLORS.BLACK};
 `
 
 const ElderlyPage = () => {
-    const [sortBy, setSortBy] = useState("date");
-    const [numVisibleItems, setNumVisibleItems] = useState(5);
-    const [favorites, setFavorites] = useRecoilState(favoriteState);
-    const [matches, setMatches] = useState([]);
+	const [sortBy, setSortBy] = useState("date");
+	const [numVisibleItems, setNumVisibleItems] = useState(5);
+	const [favorites, setFavorites] = useState([]);
+	const [matches, setMatches] = useState([]);
+	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
 
     useEffect(() => {
         getElderlyMatches(userToken)

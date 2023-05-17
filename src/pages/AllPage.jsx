@@ -1,15 +1,15 @@
-import React from "react";
 import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
-import { useState, useEffect } from "react";
 import moreSrc from "../svg/More.svg";
 import heartSelectedSrc from "../svg/heartSelect.svg";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import COLORS from "./styled/colors";
-import axios from "axios";
-import { getMatches } from '../../api/api';
-import { getFavoriteMatches } from "../../api/api";
-import { toggleFavoriteMatch } from "../../api/api";
+import { getMatches } from '../api/api';
+import { getFavoriteMatches } from "../api/api";
+import { toggleFavoriteMatch } from "../api/api";
+import { useRecoilValue } from 'recoil';
+import { searchResultState } from '../atoms/atoms';
 
 const All = styled.div`
 position: relative;
@@ -309,6 +309,7 @@ line-height: 19px;
 display: flex;
 align-items: center;
 text-align: center;
+padding-bottom: 50px;
 color: ${COLORS.BLACK};
 `
 
@@ -317,7 +318,8 @@ const AllPage = () => {
 	const [numVisibleItems, setNumVisibleItems] = useState(5);
 	const [favorites, setFavorites] = useState([]);
 	const [matches, setMatches] = useState([]);
-	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDg4OTE4fQ.3sJNScI7PrxyHmc5xEaeWyrN_zTw2x4gcoLlT7U2PahXwMYDsr3oMulYuTPWBajtIg-cmFbVs1goeZOSLZvU2g";
+	const searchResult = useRecoilValue(searchResultState);
+	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
 
 
 	//데이터 API
@@ -330,7 +332,6 @@ const AllPage = () => {
 				console.error(err);
 			});
 	}, []);
-
 
 
 	// 기존 즐겨찾기 목록
@@ -390,14 +391,21 @@ const AllPage = () => {
 
 
 	//날짜순, 가격순 나열
-	const categoryList =
-		matches.result && matches.result.data && matches.result.data.matches
-			? sortBy === "lowPrice"
-				? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
-				: sortBy === "highPrice"
-					? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
-					: [...matches.result.data.matches].sort((a, b) => new Date(a.date) - new Date(b.date))
-			: [];
+	let categoryList = [];
+	if (searchResult && searchResult.result && searchResult.result.data) {
+	  categoryList = searchResult.result.data.matches;
+	} else {
+	  categoryList =
+	    matches.result && matches.result.data && matches.result.data.matches
+	      ? sortBy === "lowPrice"
+	        ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
+	        : sortBy === "highPrice"
+	        ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
+	        : [...matches.result.data.matches].sort(
+	            (a, b) => new Date(a.date) - new Date(b.date)
+	          )
+	      : [];
+	}
 
 	const handleClick = (sortType) => {
 		setSortBy(sortType);
@@ -437,9 +445,10 @@ const AllPage = () => {
 					</List>
 
 					<ListTicket>
-						{categoryList.length === 0 && (
+						{searchResult && searchResult.result && searchResult.result.data && searchResult.result.data.matches.length === 0 && (
 							<TxtNone>일치하는 티켓이 없습니다.</TxtNone>
 						)}
+
 						<>
 							{categoryList.slice(0, numVisibleItems).map((item, index) => (
 								<TicketBox key={index}
@@ -508,3 +517,4 @@ const AllPage = () => {
 }
 
 export default AllPage;
+

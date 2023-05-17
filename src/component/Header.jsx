@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
 import logoSrc from '../svg/logoSrc.svg';
 import SearchSrc from '../svg/Search.svg';
 import MyPageSrc from '../svg/MyPage.svg';
-import { Link } from 'react-router-dom';
-import categoryDummy from "../categoryDummy";
-import { useRecoilState } from 'recoil';
-import { searchResultsState } from '../atoms/atoms';
-import { useNavigate } from "react-router-dom";
 import queryString from "query-string";
 import COLORS from "../pages/styled/colors";
 import alarmSrc from "../svg/alarm.svg";
-import axios from "axios";
+import { useRecoilState } from 'recoil';
+import { searchResultState } from '../atoms/atoms';
 
 const All = styled.div`
 position: relative;
@@ -108,63 +106,59 @@ height: 37px;
 
 
 const Header = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
-    const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDg4OTE4fQ.3sJNScI7PrxyHmc5xEaeWyrN_zTw2x4gcoLlT7U2PahXwMYDsr3oMulYuTPWBajtIg-cmFbVs1goeZOSLZvU2g";
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResult, setSearchResult] = useRecoilState(searchResultState);
+  const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
+  const navigate = useNavigate();
 
-    const handleSearch = async (event) => {
-        event.preventDefault();
-      
-        try {
-          // API 요청 보내기
-          const response = await axios.get(`http://15.164.244.154/api/search?keyword=${searchTerm}`, {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          });
-          // 검색 결과 설정
-          const searchData = response.data;
-          setSearchResult(searchData)
-        } catch (error) {
-          console.error(error);
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get(`http://15.164.244.154/api/matches/search?keyword=${searchTerm}&page=0`, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`
         }
-      };
-      
-    console.log(searchResult)
-  
-    //카테고리버튼 리셋
-    const resetSelectedButton = () => {
-      localStorage.setItem('selectedButton', null);
-      setSelectedButton(null);
-    };
-  
-    return (
-      <div>
-        <All>
-          <Allin>
-            <LogoLink to="/" onClick={resetSelectedButton}>
-              <Logo src={logoSrc} />
-            </LogoLink>
-  
-            <SearchBox onSubmit={handleSearch}>
-              <Searchinput type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-              <SearchBtn type="submit" onSubmit={handleSearch}>
-                <Searchimg src={SearchSrc} />
-              </SearchBtn>
-            </SearchBox>
-  
-            <MypageBox>
-              <Link to="/notice">
-                <SellTicket src={alarmSrc} />
-              </Link>
-              <Link to="/favoritematching">
-                <Mypage src={MyPageSrc} />
-              </Link>
-            </MypageBox>
-          </Allin>
-        </All>
-      </div>
-    );
+      });
+      setSearchResult(response.data);
+      navigate('/'); 
+    } catch (error) {
+      console.error(error);
+    }
   };
-  
-  export default Header;
+
+  //카테고리버튼 리셋
+  const resetSelectedButton = () => {
+    localStorage.setItem('selectedButton', null);
+    setSelectedButton(null);
+  };
+
+  return (
+    <div>
+      <All>
+        <Allin>
+          <LogoLink to="/" onClick={resetSelectedButton}>
+            <Logo src={logoSrc} />
+          </LogoLink>
+
+          <SearchBox onSubmit={handleSearch}>
+            <Searchinput type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <SearchBtn type="submit" onSubmit={handleSearch}>
+              <Searchimg src={SearchSrc} />
+            </SearchBtn>
+          </SearchBox>
+
+          <MypageBox>
+            <Link to="/notice">
+              <SellTicket src={alarmSrc} />
+            </Link>
+            <Link to="/favoritematching">
+              <Mypage src={MyPageSrc} />
+            </Link>
+          </MypageBox>
+        </Allin>
+      </All>
+    </div>
+  );
+};
+
+export default Header;

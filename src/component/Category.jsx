@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
-import { searchResultsState } from '../atoms/atoms';
 import { useRecoilState } from 'recoil';
 import categoryDummy from "../categoryDummy";
 import COLORS from "../pages/styled/colors";
@@ -80,27 +79,17 @@ const Category = () => {
   );
 
   const location = useLocation();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [_, setSearchResults] = useRecoilState(searchResultsState);
   const navigate = useNavigate();
 
-  const filterResults = (searchTerm) => {
-    const filteredData = categoryDummy.filter((item) =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setSearchResults(filteredData.length > 0 ? filteredData : null);
-  };
 
   const handleButtonClick = (buttonId) => {
     setSelectedButton(buttonId);
 
     localStorage.setItem('selectedButton', buttonId);
-    filterResults(searchTerm);
 
     // URL 변경
-    const queryParam = queryString.stringify({ q: searchTerm });
-    navigate(`/?${queryParam}`, { replace: true });
+    // const queryParam = queryString.stringify({ q: searchTerm });
+    // navigate(`/?${queryParam}`, { replace: true });
 
   };
   

@@ -1,9 +1,10 @@
 // recoil/atoms.js
 
-import { atom } from 'recoil';
+import { atom, RecoilRoot } from 'recoil';
 
-export const searchResultsState = atom({
-  key: 'searchResultsState',
+// 검색 결과 상태
+export const searchResultState = atom({
+  key: 'searchResultState',
   default: [],
 });
 
