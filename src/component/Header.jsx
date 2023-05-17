@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import logoSrc from '../svg/logoSrc.svg';
 import SearchSrc from '../svg/Search.svg';
 import MyPageSrc from '../svg/MyPage.svg';
-import queryString from "query-string";
+import { handleSearch } from '../api/api';
 import COLORS from "../pages/styled/colors";
 import alarmSrc from "../svg/alarm.svg";
 import { useRecoilState } from 'recoil';
@@ -106,59 +106,55 @@ height: 37px;
 
 
 const Header = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResult, setSearchResult] = useRecoilState(searchResultState);
-  const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
-  const navigate = useNavigate();
+	const [searchTerm, setSearchTerm] = useState('');
+	const [searchResult, setSearchResult] = useRecoilState(searchResultState);
+	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
+	const navigate = useNavigate();
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(`http://15.164.244.154/api/matches/search?keyword=${searchTerm}&page=0`, {
-        headers: {
-          'Authorization': `Bearer ${userToken}`
-        }
-      });
-      setSearchResult(response.data);
-      navigate('/'); 
-    } catch (error) {
-      console.error(error);
-    }
-  };
+	const handleSearchControl = async (e) => {
+		e.preventDefault();
+		try {
+			const response = await handleSearch(searchTerm, userToken);
+			setSearchResult(response);
+			navigate('/');
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-  //카테고리버튼 리셋
-  const resetSelectedButton = () => {
-    localStorage.setItem('selectedButton', null);
-    setSelectedButton(null);
-  };
+	//카테고리버튼 리셋
+	const resetSelectedButton = () => {
+		localStorage.setItem('selectedButton', null);
+		setSelectedButton(null);
+	};
 
-  return (
-    <div>
-      <All>
-        <Allin>
-          <LogoLink to="/" onClick={resetSelectedButton}>
-            <Logo src={logoSrc} />
-          </LogoLink>
+	return (
+		<div>
+			<All>
+				<Allin>
+					<LogoLink to="/" onClick={resetSelectedButton}>
+						<Logo src={logoSrc} />
+					</LogoLink>
 
-          <SearchBox onSubmit={handleSearch}>
-            <Searchinput type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-            <SearchBtn type="submit" onSubmit={handleSearch}>
-              <Searchimg src={SearchSrc} />
-            </SearchBtn>
-          </SearchBox>
+					<SearchBox onSubmit={handleSearchControl}>
+						<Searchinput type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+						<SearchBtn type="submit" onSubmit={handleSearchControl}>
+							<Searchimg src={SearchSrc} />
+						</SearchBtn>
+					</SearchBox>
 
-          <MypageBox>
-            <Link to="/notice">
-              <SellTicket src={alarmSrc} />
-            </Link>
-            <Link to="/favoritematching">
-              <Mypage src={MyPageSrc} />
-            </Link>
-          </MypageBox>
-        </Allin>
-      </All>
-    </div>
-  );
+					<MypageBox>
+						<Link to="/notice">
+							<SellTicket src={alarmSrc} />
+						</Link>
+						<Link to="/favoritematching">
+							<Mypage src={MyPageSrc} />
+						</Link>
+					</MypageBox>
+				</Allin>
+			</All>
+		</div>
+	);
 };
 
 export default Header;
