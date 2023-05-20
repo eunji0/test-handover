@@ -2,7 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import COLORS from "../styled/colors";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getFavoriteMatches } from "../../api/api";
+import { userToken } from "../../api/api";
+import { useNavigate } from "react-router-dom";
 
 const Layout = styled.div`
 display: flex;
@@ -106,43 +108,41 @@ color: ${COLORS.Navy_100};
 `
 
 const FavoriteMatching = () => {
-  const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MDg4OTE4fQ.3sJNScI7PrxyHmc5xEaeWyrN_zTw2x4gcoLlT7U2PahXwMYDsr3oMulYuTPWBajtIg-cmFbVs1goeZOSLZvU2g";
-  const [myFavorites, setMyFavorites] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const navigate = useNavigate();
+
+  const handleTicketClick = (id) => {
+    navigate(`/matches/${id}`);
+  }
+
 
   useEffect(() => {
-    const favorites = async () => {
+    const fetchFavorites = async () => {
       try {
-        const response = await axios.get('http://15.164.244.154/api/matches/favorites', {
-          headers: {
-            'Authorization': `Bearer ${userToken}`
-          }
-        });
-        setMyFavorites(response.data);
+        const response = await getFavoriteMatches(userToken);
+        setFavorites(response.data.result.data.matches);
       } catch (error) {
         console.error(error);
       }
     };
 
-    favorites();
+    fetchFavorites();
   }, []);
 
-  console.log(myFavorites)
+  console.log(favorites)
 
   return (
     <Layout>
       <All>
         <BoxTitle>내가 찜한 매칭글</BoxTitle>
         <ListBox>
-          {myFavorites.length === 0 ? (
+          {favorites.length === 0 ? (
             <p>즐겨찾기에 추가된 매칭글이 없습니다.</p>
           ) : (
-            myFavorites.result &&
-            myFavorites.result.data &&
-            myFavorites.result.data.matches &&
-            myFavorites.result.data.matches.map((item, index) => (
-              <MatchingBox key={index}>
-                <MatchingLayout key={index} item={item}>
-                  <TitleBox>{item.ticketName}</TitleBox>
+            favorites.map((item, index) => (
+              <MatchingBox key={index} onClick={() => handleTicketClick(item.id)}>
+                <MatchingLayout key={index}>
+                  <TitleBox>{item.matchName}</TitleBox>
                   <StateBox>판매중</StateBox>
                 </MatchingLayout>
               </MatchingBox>

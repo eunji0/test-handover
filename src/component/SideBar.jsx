@@ -86,9 +86,6 @@ const SideBar = () => {
 
     localStorage.setItem('selectedButton', buttonId);
 
-    // URL 변경
-    const queryParam = queryString.stringify({ q: searchTerm });
-    navigate(`/?${queryParam}`, { replace: true });
   }
 
   useEffect(() => {
@@ -100,22 +97,6 @@ const SideBar = () => {
   return (
     <div>
       <Layout>
-        {/* {categoryTxt.map((item) => (
-          <LinkStyle className="btn" key={item.id} to={item.to}>
-            <Box>
-              notice
-            </Box>
-            <MenuBox
-              key={item.id}
-              onClick={() => clickBtn(item.id)}
-              className={selectedButton === item.id ? 'active' : ''}
-              color={selectedButton === item.id ? `${COLORS.Navy_100}` : `${COLORS.GRAY}`}
-              fontWeight={selectedButton === item.id ? 600 : 400}
-            >
-              {item.txt}
-            </MenuBox>
-          </LinkStyle>
-        ))} */}
         <Box>
           notice
         </Box>
@@ -195,45 +176,6 @@ const SideBar = () => {
         <MenuBox>
           이용가이드
         </MenuBox>
-        {/* <LinkStyle to="/mypage/noticed" onClick={clickBtn}>
-          <MenuBox color={click ? `${COLORS.Navy_100}` : `${COLORS.BLACK}`}
-          fontWeight={click ? 600 : 400}>
-            알림
-          </MenuBox>
-        </LinkStyle>
-        <MenuBox>
-          쪽지함
-        </MenuBox>
-        <Box>
-          my
-        </Box>
-        <MenuBox>
-          프로필 수정하기
-        </MenuBox>
-        <Box>
-          matching
-        </Box>
-        <MenuBox>
-          내가 쓴 매칭글
-        </MenuBox>
-        <LinkStyle to="/matches/favorites"onClick={clickBtn}>
-          <MenuBox color={click ? `${COLORS.Navy_100}` : `${COLORS.BLACK}`}
-          fontWeight={click ? 600 : 400}>
-            내가 찜한 매칭글
-          </MenuBox>
-        </LinkStyle>
-        <Box>
-          settings
-        </Box>
-        <MenuBox>
-          공지사항
-        </MenuBox>
-        <MenuBox>
-          이용약관
-        </MenuBox>
-        <MenuBox>
-          이용가이드
-        </MenuBox> */}
       </Layout>
     </div>
   )

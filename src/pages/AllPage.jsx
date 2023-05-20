@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
 import moreSrc from "../svg/More.svg";
-import heartSelectedSrc from "../svg/heartSelect.svg";
+import heartSelectSrc from "../svg/heartSelect.svg";
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import COLORS from "./styled/colors";
@@ -10,6 +10,8 @@ import { getFavoriteMatches } from "../api/api";
 import { toggleFavoriteMatch } from "../api/api";
 import { useRecoilValue } from 'recoil';
 import { searchResultState } from '../atoms/atoms';
+import { userToken } from "../api/api";
+
 
 const All = styled.div`
 position: relative;
@@ -282,12 +284,16 @@ flex-direction: row;
 justify-content: center;
 align-items: center;
 gap: 10px;
-width: 124px;
-height: 39px;
+padding: 10px 15px 7px;
 background: ${COLORS.WHITE};
 border: 2px solid ${COLORS.Navy_100};
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 border-radius: 10px;
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  }
 `
 
 const TxtBuy = styled.div`
@@ -319,8 +325,7 @@ const AllPage = () => {
 	const [favorites, setFavorites] = useState([]);
 	const [matches, setMatches] = useState([]);
 	const searchResult = useRecoilValue(searchResultState);
-	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
-
+	const navigate = useNavigate();
 
 	//데이터 API
 	useEffect(() => {
@@ -335,39 +340,23 @@ const AllPage = () => {
 
 
 	// 기존 즐겨찾기 목록
-	useEffect(() => {
-		const favorites = async () => {
-			try {
-				const response = await getFavoriteMatches(userToken);
-				setFavorites(response.data.result.data.matches.map((item) => item.id));
-			} catch (error) {
-				console.error(error);
-			}
-		};
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await getFavoriteMatches(userToken);
+        setFavorites(response.data.result.data.matches.map((item) => item.id));
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-		favorites();
-	}, []);
-
-
-	// 기존 즐겨찾기 목록
-	useEffect(() => {
-		const favorites = async () => {
-			try {
-				const response = await getFavoriteMatches(userToken);
-				setFavorites(response.data.result.data.matches.map((item) => item.id));
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		favorites();
-	}, []);
+    fetchFavorites();
+  }, []);
 
 
 	// 하트 버튼 클릭 시 호출되는 함수
 	const handleFavoriteClick = (matchingId) => {
 		if (favorites.includes(matchingId)) {
-			// 이미 즐겨찾기에 추가된 티켓일 경우
 			toggleFavoriteMatch(userToken, matchingId)
 				.then(() => {
 					const newFavorites = favorites.filter((id) => id !== matchingId);
@@ -377,7 +366,6 @@ const AllPage = () => {
 					console.error(err);
 				});
 		} else {
-			// 즐겨찾기에 추가되지 않은 티켓일 경우
 			toggleFavoriteMatch(userToken, matchingId)
 				.then(() => {
 					const newFavorites = [...favorites, matchingId];
@@ -389,34 +377,33 @@ const AllPage = () => {
 		}
 	};
 
+	const handleTicketClick = (id) => {
+		navigate(`/matches/${id}`);
+	}
 
 	//날짜순, 가격순 나열
 	let categoryList = [];
-	if (searchResult && searchResult.result && searchResult.result.data) {
-	  categoryList = searchResult.result.data.matches;
-	} else {
-	  categoryList =
-	    matches.result && matches.result.data && matches.result.data.matches
-	      ? sortBy === "lowPrice"
-	        ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
-	        : sortBy === "highPrice"
-	        ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
-	        : [...matches.result.data.matches].sort(
-	            (a, b) => new Date(a.date) - new Date(b.date)
-	          )
-	      : [];
+	if (searchResult?.result?.data?.matches) {
+		categoryList = [...searchResult.result.data.matches];
+	} else if (matches?.result?.data?.matches) {
+		categoryList = [...matches.result.data.matches];
 	}
+
+	categoryList.sort((a, b) => {
+		if (sortBy === "lowPrice") {
+			return a.price - b.price;
+		} else if (sortBy === "highPrice") {
+			return b.price - a.price;
+		} else {
+			return new Date(a.startDate) - new Date(b.startDate);
+		}
+	});
+
 
 	const handleClick = (sortType) => {
 		setSortBy(sortType);
 	};
 
-
-	const navigate = useNavigate();
-
-	const handleTicketClick = (matchingId) => {
-		navigate(`/detailticket/${matchingId}`);
-	}
 
 	//more 버튼
 	const handleMoreButtonClick = () => {
@@ -467,7 +454,7 @@ const AllPage = () => {
 													event.stopPropagation(); // 이벤트 버블링 방지
 													handleFavoriteClick(item.id);
 												}} border={favorites.includes(item.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
-													<img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectedSrc : HeartSrc} />
+													<img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectSrc : HeartSrc} />
 												</HeartBox>
 
 
@@ -475,7 +462,7 @@ const AllPage = () => {
 										</BoxinTop>
 										<BoxMidL>
 											<LocationDateBox>
-												<TxtLocationDate>{item.ticketName}</TxtLocationDate>
+												<TxtLocationDate>{item.matchName}</TxtLocationDate>
 											</LocationDateBox>
 										</BoxMidL>
 										<BoxinMid>

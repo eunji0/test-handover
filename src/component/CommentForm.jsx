@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { useSetRecoilState } from "recoil";
-import { commentsState } from "../atoms/atoms";
+import axios from "axios";
 import styled from "styled-components";
 import MyPageSrc from "../svg/MyPage.svg";
 import sendingSrc from "../svg/sending.svg"
 import COLORS from "../pages/styled/colors";
+import { useParams } from "react-router-dom";
+import { userToken } from "../api/api";
+import { postComment } from '../api/api';
 
 const CommentAll = styled.div`
 display: flex;
 flex-direction: row;
 justify-content: center;
 align-items: center;
-padding: 0px 10px 30px;
+padding: 0px 10px 20px;
 gap: 10px;
-width: 980px;
-height: 90px;
+width: 100%;
 `
 
 const Profile = styled.img`
@@ -66,18 +67,22 @@ height: 30px;
 
 
 function CommentForm() {
+    const params = useParams();
+    const matchingId = params.id;
     const [text, setText] = useState("");
-    const setComments = useSetRecoilState(commentsState);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const newComment = {
-            id: Date.now(),
-            text,
-        };
-        setComments((comments) => [...comments, newComment]);
-        setText("");
+
+        try {
+            await postComment(matchingId, text, userToken);
+            setText(""); // 댓글 작성 후에 입력값 초기화
+            window.location.reload(); // 페이지 새로고침
+        } catch (error) {
+            console.error("댓글 작성 실패:", error);
+        }
     };
+
 
     return (
         <CommentAll>
@@ -90,7 +95,7 @@ function CommentForm() {
                     onChange={(e) => setText(e.target.value)}
                 />
                 <SendingBox type="submit">
-                    <Sendingimg alt="sending" src={sendingSrc} onClick={handleSubmit}/>
+                    <Sendingimg alt="sending" src={sendingSrc} onClick={handleSubmit} />
                 </SendingBox>
             </CommentFormBox>
         </CommentAll>

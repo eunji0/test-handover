@@ -3,14 +3,14 @@ import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
 import { useState, useEffect } from "react";
 import moreSrc from "../svg/More.svg";
-import heartSelectedSrc from "../svg/heartSelect.svg";
+import heartSelectSrc from "../svg/heartSelect.svg";
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { useNavigate } from "react-router-dom";
 import COLORS from "./styled/colors";
 import { getElderlyMatches } from "../api/api";
 import { getFavoriteMatches } from "../api/api";
 import { toggleFavoriteMatch } from "../api/api";
-
+import { userToken } from "../api/api";
 
 const All = styled.div`
 position: relative;
@@ -315,174 +315,174 @@ color: ${COLORS.BLACK};
 `
 
 const ElderlyPage = () => {
-	const [sortBy, setSortBy] = useState("date");
-	const [numVisibleItems, setNumVisibleItems] = useState(5);
-	const [favorites, setFavorites] = useState([]);
-	const [matches, setMatches] = useState([]);
-	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
-
-    useEffect(() => {
-        getElderlyMatches(userToken)
-            .then(res => {
-                setMatches(res.data);
-            })
-            .catch(err => {
-                console.error(err);
-            });
-    }, []);
-
-    const categoryList =
-        matches.result && matches.result.data && matches.result.data.matches
-            ? sortBy === "lowPrice"
-                ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
-                : sortBy === "highPrice"
-                    ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
-                    : [...matches.result.data.matches].sort((a, b) => new Date(a.date) - new Date(b.date))
-            : [];
-
+    const [sortBy, setSortBy] = useState("date");
+    const [numVisibleItems, setNumVisibleItems] = useState(5);
+    const [matches, setMatches] = useState([]);
+    const [favorites, setFavorites] = useState([]);
     const navigate = useNavigate();
+  
+    useEffect(() => {
+      getElderlyMatches(userToken)
+        .then(res => {
+          setMatches(res.data);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }, []);
+  
+    //날짜순, 가격순 나열
+    const categoryList =
+      matches.result && matches.result.data && matches.result.data.matches
+        ? sortBy === "lowPrice"
+          ? [...matches.result.data.matches].sort((a, b) => a.price - b.price)
+          : sortBy === "highPrice"
+            ? [...matches.result.data.matches].sort((a, b) => b.price - a.price)
+            : [...matches.result.data.matches].sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+        : [];
 
-    const handleTicketClick = (matchingId) => {
-        navigate(`/detailticket/${matchingId}`);
-    }
-
+    	const handleTicketClick = (matchingId) => {
+            navigate(`/detailticket/${matchingId}`);
+        }
+  
     const handleClick = (sortType) => {
-        setSortBy(sortType);
+      setSortBy(sortType);
     };
-
+  
     const handleMoreButtonClick = () => {
-        setNumVisibleItems(numVisibleItems + 5);
-        // 5개씩 더 보여줌
+      setNumVisibleItems(numVisibleItems + 5);
+      // 5개씩 더 보여줌
     };
-
+  
     // 기존 즐겨찾기 목록
     useEffect(() => {
-        const favorites = async () => {
-            try {
-                const response = await getFavoriteMatches(userToken);
-                setFavorites(response.data.result.data.matches.map((item) => item.id));
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        favorites();
+      const favorites = async () => {
+        try {
+          const response = await getFavoriteMatches(userToken);
+          setFavorites(response.data.result.data.matches.map((item) => item.id));
+        } catch (error) {
+          console.error(error);
+        }
+      };
+  
+      favorites();
     }, []);
-
+  
+  
     // 하트 버튼 클릭 시 호출되는 함수
     const handleFavoriteClick = (matchingId) => {
-        if (favorites.includes(matchingId)) {
-            // 이미 즐겨찾기에 추가된 티켓일 경우
-            toggleFavoriteMatch(userToken, matchingId)
-                .then(() => {
-                    const newFavorites = favorites.filter((id) => id !== matchingId);
-                    setFavorites(newFavorites);
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        } else {
-            // 즐겨찾기에 추가되지 않은 티켓일 경우
-            toggleFavoriteMatch(userToken, matchingId)
-                .then(() => {
-                    const newFavorites = [...favorites, matchingId];
-                    setFavorites(newFavorites);
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        }
+      if (favorites.includes(matchingId)) {
+        // 이미 즐겨찾기에 추가된 티켓일 경우
+        toggleFavoriteMatch(userToken, matchingId)
+          .then(() => {
+            const newFavorites = favorites.filter((id) => id !== matchingId);
+            setFavorites(newFavorites);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      } else {
+        // 즐겨찾기에 추가되지 않은 티켓일 경우
+        toggleFavoriteMatch(userToken, matchingId)
+          .then(() => {
+            const newFavorites = [...favorites, matchingId];
+            setFavorites(newFavorites);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
     };
-
+  
     return (
-        <div>
-            <All>
-                <Allin>
-                    <List>
-                        <ListBox>
-                            <ListTxt type="button" onClick={() => handleClick("date")}>
-                                날짜순
-                            </ListTxt>
-                            <ListTxt>|</ListTxt>
-                            <ListTxt type="button" onClick={() => handleClick("lowPrice")}>
-                                가격낮은순
-                            </ListTxt>
-                            <ListTxt>|</ListTxt>
-                            <ListTxt type="button" onClick={() => handleClick('highPrice')}>
-                                가격높은순
-                            </ListTxt>
-                        </ListBox>
-                    </List>
-
-                    <ListTicket>
-                        {categoryList.length === 0 && (
-                            <TxtNone>일치하는 티켓이 없습니다.</TxtNone>
-                        )}
-                        <>
-                            {categoryList.slice(0, numVisibleItems).map((item, index) => (
-                                <TicketBox key={index}
-                                    onClick={() => handleTicketClick(item.id)}
-                                >
-                                    <ListTicketBox key={item.seller_ID}>
-                                        <BoxinTop>
-                                            <TicketNameBox>
-                                                <TxtTicketName>{item.category}</TxtTicketName>
-                                            </TicketNameBox>
-                                            <SitBox>
-                                                <SellBox>
-                                                    <TxtSell>판매중</TxtSell>
-                                                </SellBox>
-                                                <HeartBox onClick={(event) => {
-                                                    event.stopPropagation(); // 이벤트 버블링 방지
-                                                    handleFavoriteClick(item.id);
-                                                }} border={favorites.includes(item.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
-                                                    <img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectedSrc : HeartSrc} />
-                                                </HeartBox>
-
-
-                                            </SitBox>
-                                        </BoxinTop>
-                                        <BoxMidL>
-                                            <LocationDateBox>
-                                                <TxtLocationDate>{item.ticketName}</TxtLocationDate>
-                                            </LocationDateBox>
-                                        </BoxMidL>
-                                        <BoxinMid>
-                                            <BoxMidL>
-                                                <LocationDateBox>
-                                                    <TxtLocationDate>{item.address}</TxtLocationDate>
-                                                </LocationDateBox>
-                                                <LocationDateBox>
-                                                    <TxtLocationDate>{item.startDate} ~ {item.endDate}</TxtLocationDate>
-                                                </LocationDateBox>
-                                            </BoxMidL>
-                                            <BoxMidR>
-                                                <TxtPrice>{item.price}원</TxtPrice>
-                                            </BoxMidR>
-                                        </BoxinMid>
-
-                                        <BoxBtm>
-                                            <BoxTicketDetail>
-                                                <TxtDetail>{item.detailsContent}</TxtDetail>
-                                            </BoxTicketDetail>
-
-                                            <BoxBuy>
-                                                <TxtBuy>매 칭 하 기</TxtBuy>
-                                            </BoxBuy>
-                                        </BoxBtm>
-                                    </ListTicketBox>
-                                </TicketBox>
-                            ))}
-                        </>
-
-                        <BoxMore type="button" onClick={handleMoreButtonClick}>
-                            <img src={moreSrc} />
-                        </BoxMore>
-                    </ListTicket>
-                </Allin>
-            </All>
-        </div>
+      <div>
+        <All>
+          <Allin>
+            <List>
+              <ListBox>
+                <ListTxt type="button" onClick={() => handleClick("date")}>
+                  날짜순
+                </ListTxt>
+                <ListTxt>|</ListTxt>
+                <ListTxt type="button" onClick={() => handleClick("lowPrice")}>
+                  가격낮은순
+                </ListTxt>
+                <ListTxt>|</ListTxt>
+                <ListTxt type="button" onClick={() => handleClick('highPrice')}>
+                  가격높은순
+                </ListTxt>
+              </ListBox>
+            </List>
+  
+            <ListTicket>
+              {categoryList.length === 0 && (
+                <TxtNone>일치하는 티켓이 없습니다.</TxtNone>
+              )}
+              <>
+                {categoryList.slice(0, numVisibleItems).map((item, index) => (
+                  <TicketBox key={index}
+                    onClick={() => handleTicketClick(item.id)}
+                  >
+                    <ListTicketBox key={item.seller_ID}>
+                      <BoxinTop>
+                        <TicketNameBox>
+                          <TxtTicketName>{item.category}</TxtTicketName>
+                        </TicketNameBox>
+                        <SitBox>
+                          <SellBox>
+                            <TxtSell>판매중</TxtSell>
+                          </SellBox>
+                          <HeartBox onClick={(event) => {
+                            event.stopPropagation(); // 이벤트 버블링 방지
+                            handleFavoriteClick(item.id);
+                          }} border={favorites.includes(item.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
+                            <img style={{ width: "24px", height: "20px" }} src={favorites.includes(item.id) ? heartSelectSrc : HeartSrc} />
+                          </HeartBox>
+  
+  
+                        </SitBox>
+                      </BoxinTop>
+                      <BoxMidL>
+                        <LocationDateBox>
+                          <TxtLocationDate>{item.ticketName}</TxtLocationDate>
+                        </LocationDateBox>
+                      </BoxMidL>
+                      <BoxinMid>
+                        <BoxMidL>
+                          <LocationDateBox>
+                            <TxtLocationDate>{item.address}</TxtLocationDate>
+                          </LocationDateBox>
+                          <LocationDateBox>
+                            <TxtLocationDate>{item.startDate} ~ {item.endDate}</TxtLocationDate>
+                          </LocationDateBox>
+                        </BoxMidL>
+                        <BoxMidR>
+                          <TxtPrice>{item.price}원</TxtPrice>
+                        </BoxMidR>
+                      </BoxinMid>
+  
+                      <BoxBtm>
+                        <BoxTicketDetail>
+                          <TxtDetail>{item.detailsContent}</TxtDetail>
+                        </BoxTicketDetail>
+  
+                        <BoxBuy>
+                          <TxtBuy>매 칭 하 기</TxtBuy>
+                        </BoxBuy>
+                      </BoxBtm>
+                    </ListTicketBox>
+                  </TicketBox>
+                ))}
+              </>
+  
+              <BoxMore type="button" onClick={handleMoreButtonClick}>
+                <img src={moreSrc} />
+              </BoxMore>
+            </ListTicket>
+          </Allin>
+        </All>
+      </div>
     )
-}
-
-export default ElderlyPage;
+  }
+  
+  export default ElderlyPage;

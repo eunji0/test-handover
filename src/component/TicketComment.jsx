@@ -1,11 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import MyPageSrc from "../svg/MyPage.svg";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { commentsState } from "../atoms/atoms";
+import { getCommentsByMatchId } from "../api/api";
+import { userToken } from "../api/api";
 import CommentForm from "./CommentForm";
 import COLORS from "../pages/styled/colors";
-
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const All = styled.div`
 display: flex;
@@ -57,12 +58,13 @@ align-items: flex-start;
 padding: ${(props) => props.padding};
 gap: 10px;
 padding: 10px;
+width: 95%;
 isolation: isolate;
 `
 
 const Profile = styled.img`
-width: 50px;
-height: 50px;
+width: 40px;
+height: 40px;
 `
 
 const CommentBar = styled.div`
@@ -74,7 +76,7 @@ border-bottom: 1px solid ${COLORS.Navy_100};
 
 const TxtId = styled.div`
 font-style: normal;
-font-weight: 500;
+font-weight: 700;
 font-size: 12px;
 line-height: 14px;
 display: flex;
@@ -99,10 +101,9 @@ display: flex;
 flex-direction: column;
 justify-content: space-between;
 align-items: flex-start;
-padding: 0px 0px 5px;
+padding: 0px 0px 5px 10px;
 gap: 10px;
-width: 900px;
-height: 50px;
+width: 100%;
 border-bottom: 1px solid ${COLORS.Navy_100};`
 
 const DeleteBox = styled.button`
@@ -118,7 +119,7 @@ border: 1px solid ${COLORS.Navy_100};
 border-radius: 5px;
 `
 
-const DeleteTxt =styled.div`
+const DeleteTxt = styled.div`
 font-style: normal;
 font-weight: 400;
 font-size: 12px;
@@ -127,13 +128,28 @@ color: ${COLORS.Navy_100};
 `
 
 export default function TicketComment() {
-    const comments = useRecoilValue(commentsState).slice().reverse();
-    const setComments = useSetRecoilState(commentsState);
+    const params = useParams();
+    const matchId = params.id;
+    const [comments, setComments] = useState([]);
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const comments = await getCommentsByMatchId(matchId, 0, userToken);
+                setComments(comments.result.data.comments);
+            } catch (error) {
+                console.error("댓글 목록 불러오기 실패:", error);
+            }
+        };
+
+        fetchComments();
+    }, [matchId]);
+
 
     const deleteComment = (commentId) => {
-      setComments((comments) => comments.filter((comment) => comment.id !== commentId));
     };
-    
+
+
     return (
 
         <All>
@@ -143,22 +159,18 @@ export default function TicketComment() {
                 </TCommentBox>
             </InnerBox>
             <CommentForm />
-            <div>
-                {comments.map((comment) => (
-                    <CommentBox key={comment.id}>
-                        <Profile alt="profile" src={MyPageSrc} />
-                        <CinnerBox>
-                            <TxtId>pppds132</TxtId>
-                            <CommentTxt>{comment.text}</CommentTxt>
-                            {/* 자기 글일때만 보이는 버튼 */}
-                            <DeleteBox onClick={() => deleteComment(comment.id)}>
-                                <DeleteTxt>삭제</DeleteTxt>
-                            </DeleteBox>
-                           
-                        </CinnerBox>
-                    </CommentBox>
-                ))}
-            </div>
+            {comments.map((comment, index) => (
+                <CommentBox key={index}>
+                    <Profile alt="profile" src={MyPageSrc} />
+                    <CinnerBox>
+                        <TxtId>{comment.writer}</TxtId>
+                        <CommentTxt>{comment.content}</CommentTxt>
+                        {/* <DeleteBox onClick={() => deleteComment(comment.id)}>
+                            <DeleteTxt>삭제</DeleteTxt>
+                        </DeleteBox> */}
+                    </CinnerBox>
+                </CommentBox>
+            ))}
         </All>
     )
 }

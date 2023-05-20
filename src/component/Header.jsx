@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 import logoSrc from '../svg/logoSrc.svg';
 import SearchSrc from '../svg/Search.svg';
@@ -10,6 +9,7 @@ import COLORS from "../pages/styled/colors";
 import alarmSrc from "../svg/alarm.svg";
 import { useRecoilState } from 'recoil';
 import { searchResultState } from '../atoms/atoms';
+import { userToken } from "../api/api";
 
 const All = styled.div`
 position: relative;
@@ -108,7 +108,6 @@ height: 37px;
 const Header = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchResult, setSearchResult] = useRecoilState(searchResultState);
-	const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1MTM5NTMyfQ.uM-C2aFXFaW4d6VDFMUxV9QmFtUGjedMDLhPwIl_0qWuDqnQtIe4i9lDFsVEkJ5W160f6PmD7ek5Zz653v3dEg";
 	const navigate = useNavigate();
 
 	const handleSearchControl = async (e) => {
@@ -116,7 +115,13 @@ const Header = () => {
 		try {
 			const response = await handleSearch(searchTerm, userToken);
 			setSearchResult(response);
-			navigate('/');
+
+      const params = new URLSearchParams();
+      params.set('q', searchTerm);
+  
+      const newUrl = `/?${params.toString()}`;
+      navigate(newUrl, { replace: true });
+
 		} catch (error) {
 			console.error(error);
 		}

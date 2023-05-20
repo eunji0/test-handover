@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { favoriteState } from "../../atoms/atoms";
-import { getWritingById } from '../../categoryDummy';
 import COLORS from "../styled/colors";
+import { useState, useEffect } from "react";
+import { getMyMatchingsPosts } from "../../api/api";
+import { userToken } from "../../api/api";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Layout = styled.div`
 display: flex;
@@ -87,13 +89,14 @@ color: ${COLORS.BLACK};
 `
 
 const StateBox = styled.div`
+cursor: pointer;
 display: flex;
 flex-direction: row;
 align-items: flex-start;
 padding: 10px 8px 10px 10px;
 gap: 10px;
 background: ${COLORS.WHITE};
-border: 1px solid ${COLORS.Navy_100};
+border: ${(props) => props.border};
 border-radius: 10px;
 font-style: normal;
 font-weight: 700;
@@ -103,39 +106,91 @@ display: flex;
 align-items: center;
 text-align: center;
 letter-spacing: 0.15em;
-color: ${COLORS.Navy_100};
+color: ${(props) => props.color || `${COLORS.Navy_100}`};
 `
 
 const MyMatchings = () => {
-    const favorites = useRecoilValue(favoriteState);
-    const matchings = favorites.map((id) => getWritingById(id));
+	const [matchingPosts, setMatchingPosts] = useState([]);
+	const navigate = useNavigate();
 
+	// 내가 쓴 매칭글
+	useEffect(() => {
+		const fetchMatchingPosts = async () => {
+			try {
+				const page = 0;
+				const posts = await getMyMatchingsPosts(page, userToken);
+				setMatchingPosts(posts.result.data.matches);
+			} catch (error) {
+				console.error('매칭글 조회 실패:', error);
+			}
+		};
 
-    return (
-            <Layout>
-                <All>
-                    <BoxTitle>
-                        내가 쓴 매칭글
-                    </BoxTitle>
+		fetchMatchingPosts();
+	}, []);
 
-                    <ListBox>
-                        {matchings.length === 0 && <p>내가 쓴 매칭글이 없습니다.</p>}
-                        {matchings.map((item, index) => (
-                            <MatchingBox key={index}>
-                                <MatchingLayout key={index} item={item}>
-                                    <TitleBox>
-                                        {item.title}
-                                    </TitleBox> 
-                                    <StateBox>
-                                        {item.state}
-                                    </StateBox>
-                                </MatchingLayout>
-                            </MatchingBox>
-                        ))}
-                    </ListBox>
-                </All>
-            </Layout>
-    );
-}
+	console.log(matchingPosts);
+
+	// 매칭 상태변경
+	const toggleMatchStatus = async (id) => {
+		try {
+			const response = await axios.patch(
+				`http://15.164.244.154/api/matches/${id}/edit/matchStatus`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`
+					}
+				}
+			);
+			const updatedStatus = response.data.matchStatus;
+
+			// 매칭글 목록의 해당 매칭글 상태를 업데이트합니다.
+			const updatedMatchingPosts = matchingPosts.map((post) => {
+				if (post.id === id) {
+					return { ...post, matchStatus: updatedStatus };
+				}
+				return post;
+			});
+
+			setMatchingPosts(updatedMatchingPosts);
+		} catch (error) {
+			console.error('매칭글 상태 변경 실패:', error);
+		}
+	};
+
+	const handleMatchingClick = (id) => {
+		navigate(`/matches/${id}`);
+	}
+
+	return (
+		<Layout>
+			<All>
+				<BoxTitle>내가 쓴 매칭글</BoxTitle>
+
+				<ListBox>
+					{matchingPosts.length === 0 && <p>내가 쓴 매칭글이 없습니다.</p>}
+					{matchingPosts.map((item, index) => (
+						<MatchingBox key={index} onClick={() => handleMatchingClick(item.id)}>
+							<MatchingLayout key={index} item={item}>
+								<TitleBox>{item.title}</TitleBox>
+								<div onClick={(e) => {
+                      e.stopPropagation();
+                      toggleMatchStatus(item.id);
+                    }}>
+									<StateBox
+										border={item.matched === false ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}
+										color={item.matched === false ? `${COLORS.Navy_100}` : `${COLORS.GRAY}`}
+									>
+										{item.matched === false ? '판매중' : '판매완료'}
+									</StateBox>
+								</div>
+							</MatchingLayout>
+						</MatchingBox>
+					))}
+				</ListBox>
+			</All>
+		</Layout>
+	);
+};
 
 export default MyMatchings;

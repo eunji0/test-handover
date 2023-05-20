@@ -35,7 +35,7 @@ export default function App() {
           </Route>
 
           <Route element={<CategoryLayout />}>
-            <Route path="/detailticket/:id" element={
+            <Route path="/matches/:id" element={
               <>
                 <ScrollToTop />
                 <DetailTicketPage />

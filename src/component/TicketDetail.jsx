@@ -1,14 +1,15 @@
 import styled from "styled-components";
 import HeartSrc from "../svg/Heart.svg";
 import modalBtnSrc from "../svg/ModalBtn.svg";
-import { useParams } from 'react-router-dom';
-import { getWritingById } from '../categoryDummy';
-import selectedHeart from "../svg/HeartSelect.svg";
+import heartSelectedSrc from "../svg/heartSelect.svg";
 import React, { useState, useEffect } from 'react';
 import COLORS from "../pages/styled/colors";
 import Modal from "./Modal";
-import { useRecoilValue, useRecoilState } from 'recoil';
-import { favoriteState } from '../atoms/atoms';
+import { getFavoriteMatches } from "../api/api";
+import { toggleFavoriteMatch } from "../api/api";
+import { userToken } from "../api/api";
+import { useParams } from 'react-router-dom';
+import { getMatchById } from '../api/api';
 
 const Box = styled.div`
 display: flex;
@@ -214,16 +215,6 @@ padding: 10px;
 gap: 15px;
 `
 
-const DetailTxt = styled.div`
-font-style: normal;
-font-weight: 500;
-font-size: 16px;
-line-height: 19px;
-display: flex;
-align-items: center;
-letter-spacing: 0.2em;
-color: ${COLORS.BLACK};
-`
 
 const PriceBox = styled.div`
 display: flex;
@@ -250,80 +241,120 @@ color: ${COLORS.BLACK};
 `
 
 const BuyBox = styled.div`
-display: flex;
-flex-direction: row;
-align-items: flex-start;
-padding: 12px 15px;
-gap: 10px;
-background: ${COLORS.WHITE};
-border: 2px solid ${COLORS.Navy_100};
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-border-radius: 10px;
-`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 10px 15px 8px;
+  gap: 10px;
+  background: ${COLORS.WHITE};
+  border: 2px solid ${COLORS.Navy_100};
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  }
+`;
 
 const BuyTxt = styled.div`
-font-style: normal;
-font-weight: 600;
-font-size: 24px;
-line-height: 28px;
-display: flex;
-align-items: center;
-text-align: center;
-color: ${COLORS.Navy_100};
-`
-
-const Heartsvg = styled.img`
-width: 24px;
-height: 20px;
-`
-
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 28px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: ${COLORS.Navy_100};
+`;
 
 
 export default function TicketDetail() {
-	const { id } = useParams();
-	const matching = getWritingById(id);
-	const [favorites, setFavorites] = useRecoilState(favoriteState);
+	const params = useParams();
+	const matchingId = params.id;
 	const [showModal, setShowModal] = useState(false);
+	const [favorites, setFavorites] = useState([]);
+	const [match, setMatch] = useState(null);
 
 	const handleModalClick = () => {
 		setShowModal(!showModal);
 	}
 
+
+	//매칭글 정보 API
+	useEffect(() => {
+		const fetchMatch = async () => {
+			try {
+				const matchData = await getMatchById(matchingId);
+				setMatch(matchData);
+			} catch (error) {
+				// 오류 처리
+			}
+		};
+
+		fetchMatch();
+	}, [matchingId]);
+
+
+
+	// 기존 즐겨찾기 목록
+	useEffect(() => {
+		const favorites = async () => {
+			try {
+				const response = await getFavoriteMatches(userToken);
+				setFavorites(response.data.result.data.matches.map((item) => item.id));
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		favorites();
+	}, []);
+
 	// 하트 버튼 클릭 시 호출되는 함수
 	const handleFavoriteClick = (matchingId) => {
-	    if (favorites.includes(matchingId)) {
-	        // 이미 즐겨찾기에 추가된 티켓일 경우
-	        const newFavorites = favorites.filter((id) => id !== matchingId);
-	        setFavorites(newFavorites);
-	    } else {
-	        // 즐겨찾기에 추가되지 않은 티켓일 경우
-	        const newFavorites = [...favorites, matchingId];
-	        setFavorites(newFavorites);
-	    }
+		if (favorites.includes(matchingId)) {
+			toggleFavoriteMatch(userToken, matchingId)
+				.then(() => {
+					const newFavorites = favorites.filter((id) => id !== matchingId);
+					setFavorites(newFavorites);
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		} else {
+			toggleFavoriteMatch(userToken, matchingId)
+				.then(() => {
+					const newFavorites = [...favorites, matchingId];
+					setFavorites(newFavorites);
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		}
 	};
+
 
 	return (
 		<div>
-			{matching && (
-				<Box>
+      { match && match.result && match.result.data ? (
+				< Box >
 					<InnerBox>
 						<TopBox>
 							<NameBox>
-								<NameTxt>{matching.title}</NameTxt>
+								<NameTxt>{match.result.data.matchName}</NameTxt>
 							</NameBox>
 							<ItemBox>
 								<ItemInBox>
 									<SellBox>
-										<SellTxt>{matching.state}</SellTxt>
+										<SellTxt>판매중</SellTxt>
 									</SellBox>
-									<div onClick={() => setFavorite(!favorite)}>
-										<HeartBox onClick={(event) => {
-											event.stopPropagation(); // 이벤트 버블링 방지
-											handleFavoriteClick(matching.id);
-										}} border={favorites == false ? `1px solid ${COLORS.GRAY}` : `1px solid ${COLORS.Navy_100}`}>
-											{favorites == false ? <Heartsvg alt="heart" src={HeartSrc} /> : <Heartsvg alt="selectHeart" src={selectedHeart} />}
-										</HeartBox>
-									</div>
+									<HeartBox onClick={(event) => {
+										event.stopPropagation(); // 이벤트 버블링 방지
+										handleFavoriteClick(match.result.data.id);
+									}} border={favorites.includes(match.result.data.id) ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}>
+										<img style={{ width: "24px", height: "20px" }} src={favorites.includes(match.result.data.id) ? heartSelectedSrc : HeartSrc} />
+									</HeartBox>
 									<HeartBox border={`1px solid ${COLORS.Navy_100}`} onClick={handleModalClick}>
 										<img alt="modal" src={modalBtnSrc} />
 									</HeartBox>
@@ -339,27 +370,27 @@ export default function TicketDetail() {
 
 							<DateinnerBox>
 								<DateTxt>
-									{matching.date}
+									{match.result.data.startDate} ~ {match.result.data.endDate}
 								</DateTxt>
 							</DateinnerBox>
 							<DateinnerBox>
 								<DateTxt>
-									{matching.location}
+									{match.result.data.address}
 								</DateTxt>
 							</DateinnerBox>
 						</DateBox>
 						<ContextBox>
 							<Detail>
 								<DetailBox>
-									{matching.content}
+									{match.result.data.detailsContent}
 								</DetailBox>
 								<ImportantBox>
-									{matching.important}
+									{ match.result.data.precaution }
 								</ImportantBox>
 							</Detail>
 							<BuyFrame>
 								<PriceBox>
-									<PriceTxt>{matching.price}원</PriceTxt>
+									<PriceTxt>{match.result.data.price }원</PriceTxt>
 								</PriceBox>
 								<BuyBox>
 									<BuyTxt>매 칭 하 기</BuyTxt>
@@ -368,7 +399,9 @@ export default function TicketDetail() {
 						</ContextBox>
 					</InnerBox>
 				</Box>
-			)}
-		</div>
+			) : (
+        <div>Loading...</div> 
+      )}
+		</div >
 	)
 }
