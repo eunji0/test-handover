@@ -129,7 +129,6 @@ const FavoriteMatching = () => {
     fetchFavorites();
   }, []);
 
-  console.log(favorites)
 
   return (
     <Layout>

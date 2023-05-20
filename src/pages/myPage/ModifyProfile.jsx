@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import COLORS from "../styled/colors";
 import { useState } from "react";
@@ -109,14 +109,43 @@ align-items: center;
 text-align: center;
 color: ${COLORS.Navy_100};`
 
+const CheckPasswordBox = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+/* padding: 10px;
+gap: 10px; */
+`
+
+const ErrorTxt = styled.div`
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px 0px 0px 10px;
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+color: #FF0000;
+`
+
 const ModifyProfile = () => {
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(`Nickname: ${nickname}, Password: ${password}`);
   };
+
+  useEffect(() => {
+    if (password !== confirmPassword) {
+      setPasswordError(true);
+    } else {
+      setPasswordError(false);
+    }
+  })
 
 
   return (
@@ -128,35 +157,47 @@ const ModifyProfile = () => {
 
         <ListBox>
           <form onClick={handleSubmit}>
-            <InnerBox type="text"
-              id="nickname"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)} >
+            <InnerBox>
               <Txt>
                 닉네임 :
               </Txt>
-              <InputBox />
-            </InnerBox>
-            <InnerBox type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} >
-              <Txt>
-                비밀번호 :
-              </Txt>
-              <InputBox />
+              <InputBox type="text"
+              id="nickname"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)} />
             </InnerBox>
             <InnerBox>
               <Txt>
+                비밀번호 :
+              </Txt>
+              <InputBox type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} />
+            </InnerBox>
+
+            <InnerBox >
+              <Txt>
                 비밀번호 확인 :
               </Txt>
-              <InputBox />
+              <CheckPasswordBox>
+                <InputBox type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}/>
+                {passwordError && (
+                  <ErrorTxt>
+                    비밀번호가 일치하지 않습니다.
+                  </ErrorTxt>
+                )}
+              </CheckPasswordBox>
             </InnerBox>
+
           </form>
         </ListBox>
 
         <BtnLayout>
-          <Btn type="submit"  onSubmit={handleSubmit}>
+          <Btn type="submit" onSubmit={handleSubmit}>
             확인
           </Btn>
         </BtnLayout>

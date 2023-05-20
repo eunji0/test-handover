@@ -1,12 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import MyPageSrc from "../svg/MyPage.svg";
-import { getCommentsByMatchId } from "../api/api";
+import { getCommentsByMatchId, userName } from "../api/api";
 import { userToken } from "../api/api";
 import CommentForm from "./CommentForm";
 import COLORS from "../pages/styled/colors";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { deleteCommentById } from "../api/api";
 
 const All = styled.div`
 display: flex;
@@ -65,13 +66,6 @@ isolation: isolate;
 const Profile = styled.img`
 width: 40px;
 height: 40px;
-`
-
-const CommentBar = styled.div`
-height: 50px;
-width: 900px;
-background: #FFFFFF;
-border-bottom: 1px solid ${COLORS.Navy_100};
 `
 
 const TxtId = styled.div`
@@ -146,8 +140,17 @@ export default function TicketComment() {
     }, [matchId]);
 
 
-    const deleteComment = (commentId) => {
-    };
+    const deleteComment = async (commentId) => {
+        try {
+          // 댓글 삭제 API 호출 등
+          await deleteCommentById(commentId, userToken);
+          // 댓글 삭제 후 목록 업데이트
+          const updatedComments = comments.filter((comment) => comment.id !== commentId);
+          setComments(updatedComments);
+        } catch (error) {
+          console.error("댓글 삭제 실패:", error);
+        }
+      };
 
 
     return (
@@ -165,9 +168,11 @@ export default function TicketComment() {
                     <CinnerBox>
                         <TxtId>{comment.writer}</TxtId>
                         <CommentTxt>{comment.content}</CommentTxt>
-                        {/* <DeleteBox onClick={() => deleteComment(comment.id)}>
-                            <DeleteTxt>삭제</DeleteTxt>
-                        </DeleteBox> */}
+                        {comments.writer === userName && (
+                            <DeleteBox onClick={() => deleteComment(comment.id)}>
+                                <DeleteTxt>삭제</DeleteTxt>
+                            </DeleteBox>
+                        )}
                     </CinnerBox>
                 </CommentBox>
             ))}

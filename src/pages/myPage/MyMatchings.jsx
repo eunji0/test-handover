@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import COLORS from "../styled/colors";
 import { useState, useEffect } from "react";
-import { getMyMatchingsPosts } from "../../api/api";
+import { getMyMatchingsPosts, toggleMatchStatus } from "../../api/api";
 import { userToken } from "../../api/api";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -128,35 +128,25 @@ const MyMatchings = () => {
 		fetchMatchingPosts();
 	}, []);
 
-	console.log(matchingPosts);
 
 	// 매칭 상태변경
-	const toggleMatchStatus = async (id) => {
-		try {
-			const response = await axios.patch(
-				`http://15.164.244.154/api/matches/${id}/edit/matchStatus`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${userToken}`
-					}
-				}
-			);
-			const updatedStatus = response.data.matchStatus;
+  const handleToggleMatchStatus = async (id) => {
+    try {
+      const updatedStatus = await toggleMatchStatus(id, userToken);
 
-			// 매칭글 목록의 해당 매칭글 상태를 업데이트합니다.
-			const updatedMatchingPosts = matchingPosts.map((post) => {
-				if (post.id === id) {
-					return { ...post, matchStatus: updatedStatus };
-				}
-				return post;
-			});
+      const updatedMatchingPosts = matchingPosts.map((post) => {
+        if (post.id === id) {
+          return { ...post, matchStatus: updatedStatus };
+        }
+        return post;
+      });
 
-			setMatchingPosts(updatedMatchingPosts);
-		} catch (error) {
-			console.error('매칭글 상태 변경 실패:', error);
-		}
-	};
+      setMatchingPosts(updatedMatchingPosts);
+			window.location.reload();
+    } catch (error) {
+      console.error('매칭글 상태 변경 실패:', error);
+    }
+  };
 
 	const handleMatchingClick = (id) => {
 		navigate(`/matches/${id}`);
@@ -175,7 +165,7 @@ const MyMatchings = () => {
 								<TitleBox>{item.title}</TitleBox>
 								<div onClick={(e) => {
                       e.stopPropagation();
-                      toggleMatchStatus(item.id);
+                      handleToggleMatchStatus(item.id);
                     }}>
 									<StateBox
 										border={item.matched === false ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}
