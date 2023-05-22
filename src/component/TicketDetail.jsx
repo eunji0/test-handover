@@ -80,7 +80,7 @@ gap: 5px;
 `
 const DateBox = styled.div`
 display: flex;
-flex-direction: row;
+flex-direction: column;
 align-items: flex-start;
 padding: 0px 10px 0px 0px;
 gap: 10px;
@@ -173,9 +173,10 @@ width: 100%;
 display: flex;
 flex-direction: column;
 align-items: flex-start;
-padding: 20px 10px 10px 15px;
+padding: 10px 10px 10px 15px;
 gap: 10px;
-height: 179px;
+min-height: 179px;
+overflow: auto;
 background: #FFFFFF;
 border-radius: 10px;
 font-style: normal;
@@ -189,6 +190,8 @@ color: ${COLORS.BLACK};
 
 const ImportantBox = styled.div`
 width: 100%;
+min-height: 38px;
+overflow: auto;
 display: flex;
 flex-direction: column;
 justify-content: center;
@@ -201,7 +204,6 @@ font-style: normal;
 font-weight: 600;
 font-size: 14px;
 line-height: 16px;
-display: flex;
 align-items: left;
 color: ${COLORS.BLACK};`
 
@@ -244,7 +246,7 @@ const BuyBox = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 10px 15px 8px;
+  padding: 10px 15px;
   gap: 10px;
   background: ${COLORS.WHITE};
   border: 2px solid ${COLORS.Navy_100};
@@ -266,7 +268,7 @@ const BuyTxt = styled.div`
   align-items: center;
   text-align: center;
   color: ${COLORS.Navy_100};
-`;
+`
 
 
 export default function TicketDetail() {
@@ -294,7 +296,6 @@ export default function TicketDetail() {
 
 		fetchMatch();
 	}, [matchingId]);
-
 
 
 	// 기존 즐겨찾기 목록
@@ -337,7 +338,7 @@ export default function TicketDetail() {
 
 	return (
 		<div>
-      { match && match.result && match.result.data ? (
+			{match && match.result && match.result.data ? (
 				< Box >
 					<InnerBox>
 						<TopBox>
@@ -385,12 +386,12 @@ export default function TicketDetail() {
 									{match.result.data.detailsContent}
 								</DetailBox>
 								<ImportantBox>
-									{ match.result.data.precaution }
+									{match.result.data.precaution}
 								</ImportantBox>
 							</Detail>
 							<BuyFrame>
 								<PriceBox>
-									<PriceTxt>{match.result.data.price }원</PriceTxt>
+									<PriceTxt>{match.result.data.price}원</PriceTxt>
 								</PriceBox>
 								<BuyBox>
 									<BuyTxt>매 칭 하 기</BuyTxt>
@@ -400,8 +401,8 @@ export default function TicketDetail() {
 					</InnerBox>
 				</Box>
 			) : (
-        <div>Loading...</div> 
-      )}
+				<div>Loading...</div>
+			)}
 		</div >
 	)
 }

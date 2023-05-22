@@ -171,7 +171,7 @@ const MyMatchings = () => {
 										border={item.matched === false ? `1px solid ${COLORS.Navy_100}` : `1px solid ${COLORS.GRAY}`}
 										color={item.matched === false ? `${COLORS.Navy_100}` : `${COLORS.GRAY}`}
 									>
-										{item.matched === false ? '판매중' : '판매완료'}
+										{item.matched === false ? '매칭중' : '매칭완료'}
 									</StateBox>
 								</div>
 							</MatchingLayout>
