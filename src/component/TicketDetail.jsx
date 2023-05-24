@@ -10,6 +10,7 @@ import { toggleFavoriteMatch } from "../api/api";
 import { userToken } from "../api/api";
 import { useParams } from 'react-router-dom';
 import { getMatchById } from '../api/api';
+import ReportModal from "./ReportModal";
 
 const Box = styled.div`
 display: flex;
@@ -270,18 +271,36 @@ const BuyTxt = styled.div`
   color: ${COLORS.Navy_100};
 `
 
+const ModalWrapper = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+	background-color: ${COLORS.WHITE};
+`
+
 
 export default function TicketDetail() {
 	const params = useParams();
 	const matchingId = params.id;
 	const [showModal, setShowModal] = useState(false);
+	const [showReportModal, setShowReportModal] = useState(false);
 	const [favorites, setFavorites] = useState([]);
 	const [match, setMatch] = useState(null);
 
+
 	const handleModalClick = () => {
 		setShowModal(!showModal);
-	}
+	};
 
+	const handleReportClick = () => {
+		setShowModal(false)
+		setShowReportModal(true);
+	};
+
+	// console.log(showModal);
+	// console.log(showReportModal);
 
 	//매칭글 정보 API
 	useEffect(() => {
@@ -337,6 +356,7 @@ export default function TicketDetail() {
 
 
 	return (
+
 		<div>
 			{match && match.result && match.result.data ? (
 				< Box >
@@ -362,9 +382,14 @@ export default function TicketDetail() {
 								</ItemInBox>
 
 								{showModal && (
-									<Modal>
-									</Modal>
+									<Modal onClose={handleReportClick}/>
 								)}
+								{showReportModal && (
+									<ModalWrapper>
+										<ReportModal onClose={()=>setShowReportModal(false)}/>
+									</ModalWrapper>
+								)}
+
 							</ItemBox>
 						</TopBox>
 						<DateBox>
@@ -399,6 +424,7 @@ export default function TicketDetail() {
 							</BuyFrame>
 						</ContextBox>
 					</InnerBox>
+
 				</Box>
 			) : (
 				<div>Loading...</div>

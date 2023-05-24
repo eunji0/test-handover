@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../styled/colors";
+import axios from "axios";
+import { userToken, checkRecieveMessages, checkSentMessages } from "../../api/api";
 
 const Layout = styled.div`
 display: flex;
@@ -103,6 +105,12 @@ text-align: center;
 color: ${COLORS.BLACK};`
 
 const MessageBox = () => {
+
+  //발신함
+  checkSentMessages(userToken)
+
+  //수신함
+  checkRecieveMessages(userToken)
 
 
   return (

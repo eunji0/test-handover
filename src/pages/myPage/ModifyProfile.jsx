@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import COLORS from "../styled/colors";
 import { useState } from "react";
+import { userToken } from "../../api/api";
+import { updateProfile } from "../../api/api";
 
 const Layout = styled.div`
 display: flex;
@@ -135,17 +137,25 @@ const ModifyProfile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  };
-
-  useEffect(() => {
     if (password !== confirmPassword) {
       setPasswordError(true);
+      return; // 비밀번호가 일치하지 않으면 함수 종료
     } else {
       setPasswordError(false);
     }
-  })
+
+    try {
+      await updateProfile(nickname, password, userToken);
+      // 프로필 업데이트 성공
+    } catch (error) {
+      // 프로필 업데이트 실패
+      console.error(error);
+      setApiError(error.message);
+    }
+  };
+
 
 
   return (
@@ -156,24 +166,24 @@ const ModifyProfile = () => {
         </BoxTitle>
 
         <ListBox>
-          <form onClick={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <InnerBox>
               <Txt>
                 닉네임 :
               </Txt>
               <InputBox type="text"
-              id="nickname"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)} />
+                id="nickname"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)} />
             </InnerBox>
             <InnerBox>
               <Txt>
                 비밀번호 :
               </Txt>
               <InputBox type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} />
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)} />
             </InnerBox>
 
             <InnerBox >
@@ -182,9 +192,9 @@ const ModifyProfile = () => {
               </Txt>
               <CheckPasswordBox>
                 <InputBox type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}/>
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)} />
                 {passwordError && (
                   <ErrorTxt>
                     비밀번호가 일치하지 않습니다.
@@ -197,7 +207,7 @@ const ModifyProfile = () => {
         </ListBox>
 
         <BtnLayout>
-          <Btn type="submit" onSubmit={handleSubmit}>
+          <Btn type="submit" onClick={handleSubmit}>
             확인
           </Btn>
         </BtnLayout>
