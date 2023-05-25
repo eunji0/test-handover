@@ -25,10 +25,10 @@ align-items: center;
 padding: 10px 15px;
 gap: 8px;
 background: ${COLORS.WHITE};
-border-width: 1px 1px 0px 1px;
+border-width: 1px 1px 1px 1px;
 border-style: solid;
 border-color: ${COLORS.Navy_100};
-border-radius: 10px 10px 0px 0px;
+border-radius: 10px 10px 10px 10px;
 font-style: normal;
 font-weight: 500;
 font-size: 16px;
@@ -65,7 +65,7 @@ color: ${COLORS.Navy_100};
 
 
 
-const MyModal = ({ onClose }) => {
+const MyModal = () => {
 
   return (
       <ModalLayout>
@@ -73,10 +73,6 @@ const MyModal = ({ onClose }) => {
           수정하기
           <img alt="수정하기" src={penSrc} />
         </ModalBox>
-        <BModalBox onClick={onClose}>
-          삭제하기
-          <img style={{width:"22px", height:"22px"}} alt="삭제하기" src={deleteSrc}/>
-        </BModalBox>
       </ModalLayout>
   );
 };

@@ -10,8 +10,8 @@ flex-direction: column;
 align-items: flex-start;
 padding: 10px;
 position: absolute;
-left: 834px;
-top: 93px;
+left: ${(props)=>props.left || "834px"};
+top: ${(props)=>props.top || "93px"};
 z-index: 10;
 cursor: pointer;
 width: 160px !important;
@@ -65,10 +65,10 @@ color: ${COLORS.Navy_100};
 
 
 
-const Modal = ({ onClose }) => {
+const Modal = ({ onClose, left, top }) => {
 
   return (
-      <ModalLayout>
+      <ModalLayout left={left} top={top}>
         <ModalBox>
           쪽지하기
           <img alt="쪽지하기" src={letterSrc} />

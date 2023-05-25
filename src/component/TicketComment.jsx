@@ -169,6 +169,7 @@ border: none;
 
 const ModalWrapper = styled.div`
 position: relative;
+z-index: 10;
 `;
 
 
@@ -197,7 +198,7 @@ export default function TicketComment() {
 		}
 	};
 
-	// console.log(showUModal)
+	console.log(showUModal)
 	useEffect(() => {
 		const fetchComments = async () => {
 			try {
@@ -294,11 +295,11 @@ export default function TicketComment() {
 					</CinnerBox>
 				</CommentBox>
 			))}
-			{/* {showUModal && (
+			{showUModal && (
 				<ModalWrapper>
-					<Modal onClose={handleReportClick} />
+					<Modal onClose={handleReportClick} top={"-80px"} left={"-140px"}/>
 				</ModalWrapper>
-			)} */}
+			)}
 		</All>
 
 	);
