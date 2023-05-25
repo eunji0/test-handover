@@ -3,7 +3,8 @@ import styled from "styled-components";
 import COLORS from "../styled/colors";
 import { useState } from "react";
 import { userToken } from "../../api/api";
-import { updateProfile } from "../../api/api";
+import { updateProfile, outProfile } from "../../api/api";
+import OutModal from "../../component/OutModal";
 
 const Layout = styled.div`
 display: flex;
@@ -131,11 +132,52 @@ line-height: 15px;
 color: #FF0000;
 `
 
+const OutBox = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: flex-end;
+align-items: flex-start;
+padding: 10px;
+width: 100%;
+`
+
+const OutBtn = styled.button`
+text-decoration-line: underline;
+border: none;
+background-color: ${COLORS.WHITE};
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 10px;
+gap: 10px;
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 16px;
+display: flex;
+align-items: center;
+text-align: center;
+color: ${COLORS.GRAY};
+`
+
+const ModalWrapper = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+	background-color: ${COLORS.WHITE};
+`
+
+
+
 const ModifyProfile = () => {
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
+  const [outModal, setOutModal] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,7 +194,6 @@ const ModifyProfile = () => {
     } catch (error) {
       // 프로필 업데이트 실패
       console.error(error);
-      setApiError(error.message);
     }
   };
 
@@ -211,6 +252,16 @@ const ModifyProfile = () => {
             확인
           </Btn>
         </BtnLayout>
+
+        <OutBox>
+          <OutBtn type="button" onClick={() => setOutModal(!outModal)}>회원탈퇴하기</OutBtn>
+        </OutBox>
+        {
+          outModal && 
+          <ModalWrapper>
+            <OutModal onClose={() => setOutModal(false)} />
+          </ModalWrapper>
+        }
       </All>
     </Layout>
   );

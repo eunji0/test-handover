@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import COLORS from "../styled/colors";
+import { userToken, getLastConversation, userName } from "../../api/api";
 import axios from "axios";
-import { userToken, checkRecieveMessages, checkSentMessages } from "../../api/api";
 
 const Layout = styled.div`
 display: flex;
@@ -105,12 +105,23 @@ text-align: center;
 color: ${COLORS.BLACK};`
 
 const MessageBox = () => {
+  const [messages, setMessages] = useState([]);
 
-  //발신함
-  checkSentMessages(userToken)
+  // getLastConversation(userToken, userName)
 
-  //수신함
-  checkRecieveMessages(userToken)
+  useEffect(() => {
+    getLastConversation(userToken, userName)
+      .then(conversation => {
+        setMessages([conversation]);
+      })
+      .catch(error => {
+        console.error(error);
+        // 에러 처리
+      });
+  }, []);
+
+  const msg = messages[0]
+  console.log(msg)
 
 
   return (
@@ -121,50 +132,23 @@ const MessageBox = () => {
         </BoxTitle>
 
         <ListBox>
-          <InnerBox>
-            <TopBox>
-              닉네임 453
-              <DateBox>
-                2023.04.03
-              </DateBox>
-            </TopBox>
-            <ContentBox>
-              넵 알겠습니다.
-            </ContentBox>
-          </InnerBox>
-          <InnerBox>
-            <TopBox>
-              닉네임 453
-              <DateBox>
-                2023.04.03
-              </DateBox>
-            </TopBox>
-            <ContentBox>
-              넵 알겠습니다.
-            </ContentBox>
-          </InnerBox>
-          <InnerBox>
-            <TopBox>
-              닉네임 453
-              <DateBox>
-                2023.04.03
-              </DateBox>
-            </TopBox>
-            <ContentBox>
-              넵 알겠습니다.
-            </ContentBox>
-          </InnerBox>
-          <InnerBox>
-            <TopBox>
-              닉네임 453
-              <DateBox>
-                2023.04.03
-              </DateBox>
-            </TopBox>
-            <ContentBox>
-              넵 알겠습니다.
-            </ContentBox>
-          </InnerBox>
+          {
+            msg &&
+            msg.map((item, index) => (
+              <InnerBox key={index}>
+                <TopBox>
+                  {item.username}
+                  <DateBox>
+                    {item.time}
+                  </DateBox>
+                </TopBox>
+                <ContentBox>
+                  {item.content}
+                </ContentBox>
+              </InnerBox>
+            ))
+          }
+
         </ListBox>
       </All>
     </Layout>

@@ -21,6 +21,7 @@ import MyMatchings from "./pages/myPage/MyMatchings";
 export default function App() {
   return (
     <div className="App">
+      
       <GlobalStyle />
       <BrowserRouter>
         <Header />

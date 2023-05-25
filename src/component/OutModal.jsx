@@ -1,9 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../pages/styled/colors";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { userToken, reportId } from "../api/api";
+import { userToken, outProfile } from "../api/api";
 
 const Layout = styled.div`
 display: flex;
@@ -14,7 +12,6 @@ padding: 10px 15px 20px;
 gap: 10px;
 position: relative;
 width: 533px;
-height: 332px;
 background: ${COLORS.WHITE};
 border: 1px solid ${COLORS.Navy_100};
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -26,7 +23,7 @@ display: flex;
 flex-direction: row;
 justify-content: space-between;
 align-items: center;
-padding: 10px 140px;
+padding: 20px 110px;
 width: 100%;
 border-bottom: 1px solid ${COLORS.GRAY};
 font-style: normal;
@@ -72,42 +69,35 @@ text-align: center;
 color: ${COLORS.Navy_100};
 `
 
-const ReportModal = ({ onClose })  => {
-  const params = useParams();
-  const reportedMatchId = params.id;
-  const [content, setContent] = useState("");
+const OutModal = ({ onClose }) => {
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleButtonClick();
-    }
-  };
-
-  // 신고처리
-  const handleButtonClick = () => {
-    reportId(reportedMatchId, content, userToken, onClose);
-  };
+	const handleOut = async (e) => {
+		e.preventDefault();
+	
+		try {
+			await outProfile(userToken, onClose);
+      
+      alert("회원 탈퇴하였습니다.")
+			// 회원 탈퇴 성공
+		} catch (error) {
+			console.error(error);
+			// 회원 탈퇴 실패
+		}
+	};
+	
 
   return (
     <Layout>
       <Box>
-        신고하시겠습니까?
+        회원 탈퇴하시겠습니까?
       </Box>
-      <InnerBox
-        type="text"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="신고사유를 작성해주세요."
-        onKeyDown={handleKeyDown}
-      />
-      <div style={{ display: "flex", flexDirection: "row", gap:"10px" }}>
-        <Btn onClick={handleButtonClick}>확인</Btn>
-        <Btn onClick={onClose}>취소</Btn>
+      <div style={{ display: "flex", flexDirection: "row", gap: "20px", padding: "10px" }}>
+        <Btn onClick={handleOut}>네</Btn>
+        <Btn onClick={onClose}>아니요</Btn>
       </div>
     </Layout>
   );
 };
 
-export default ReportModal;
+export default OutModal;
 

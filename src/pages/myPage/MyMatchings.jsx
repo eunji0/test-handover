@@ -151,6 +151,7 @@ const MyMatchings = () => {
 	const handleMatchingClick = (id) => {
 		navigate(`/matches/${id}`);
 	}
+	
 
 	return (
 		<Layout>

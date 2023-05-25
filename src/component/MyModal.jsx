@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../pages/styled/colors";
-import letterSrc from "../svg/letter.svg";
-import reportSrc from "../svg/report.svg";
+import penSrc from "../svg/pen.svg";
+import deleteSrc from "../svg/delete.svg";
 
 const ModalLayout = styled.div`
 display: flex;
@@ -65,20 +65,20 @@ color: ${COLORS.Navy_100};
 
 
 
-const Modal = ({ onClose }) => {
+const MyModal = ({ onClose }) => {
 
   return (
       <ModalLayout>
         <ModalBox>
-          쪽지하기
-          <img alt="쪽지하기" src={letterSrc} />
+          수정하기
+          <img alt="수정하기" src={penSrc} />
         </ModalBox>
         <BModalBox onClick={onClose}>
-          신고하기
-          <img alt="신고하기" src={reportSrc}/>
+          삭제하기
+          <img style={{width:"22px", height:"22px"}} alt="삭제하기" src={deleteSrc}/>
         </BModalBox>
       </ModalLayout>
   );
 };
 
-export default Modal;
+export default MyModal;

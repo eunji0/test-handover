@@ -3,25 +3,31 @@ import axios from 'axios';
 const baseURL = 'http://15.164.244.154/api';
 // const baseURL = 'http://handover.p-e.kr/api';
 
-export const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1NzM3Njg5fQ.3vqfVxTl4_GtoAPtrtx5_6KREJAiWu7HOgAAdoCdlnzGskkObNqUOyNMYlCDJ_SfkXh1QVeSpKzDJ9WklUpZTg";
-export const userName = "은지";//원래는 로그인 api에서 가져옴
+// export const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLrp53rmJAiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1ODI0Njc2fQ.L0zzkFRlQmu_kKL9eehFmuRneh7kYSydMMrjzdH0Wsl21A9d3uF0tPK_XnWZouRGbTSF8tlpPtJAxaJuV0bBwg";
+// export const userName = "망또";//원래는 로그인 api에서 가져옴
+
+// export const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsnYDsp4AiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjg1NzM3Njg5fQ.3vqfVxTl4_GtoAPtrtx5_6KREJAiWu7HOgAAdoCdlnzGskkObNqUOyNMYlCDJ_SfkXh1QVeSpKzDJ9WklUpZTg";
+// export const userName = "은지";//원래는 로그인 api에서 가져옴
+
+export const userToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMiIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2ODU5MTI1MTR9.lAzAr1Po9oZE2ea7wJkAOcsk1fPnPitnQT-3TZV4CQSfgbQ1XtVhG-woZ4MrwR9_SyZQ-W1sZStwoqbvX7X59w";
+export const userName = "user2";
 
 //전체 데이터 API
 export const getMatches = (userToken) => {
-	return axios.get(`${baseURL}/matches`, {
-		headers: {
-			'Authorization': `Bearer ${userToken}`
-		}
-	});
+  return axios.get(`${baseURL}/matches`, {
+    headers: {
+      'Authorization': `Bearer ${userToken}`
+    }
+  });
 };
 
 //즐겨찾기 목록 API 
 export const getFavoriteMatches = (userToken) => {
-	return axios.get(`${baseURL}/matches/favorites`, {
-		headers: {
-			'Authorization': `Bearer ${userToken}`,
-		},
-	});
+  return axios.get(`${baseURL}/matches/favorites`, {
+    headers: {
+      'Authorization': `Bearer ${userToken}`,
+    },
+  });
 };
 
 //즐겨찾기 추가, 삭제 API
@@ -39,39 +45,39 @@ export const toggleFavoriteMatch = (userToken, matchingId) => {
 
 //노인돌봄 데이터 API
 export const getElderlyMatches = (userToken) => {
-	return axios.get(`${baseURL}/matches/category?category=노인돌봄`, {
-		headers: {
-			'Authorization': `Bearer ${userToken}`
-		}
-	});
+  return axios.get(`${baseURL}/matches/category?category=노인돌봄`, {
+    headers: {
+      'Authorization': `Bearer ${userToken}`
+    }
+  });
 };
 
 //아이돌봄 데이터 API
 export const getKidsMatches = (userToken) => {
-	return axios.get(`${baseURL}/matches/category?category=아이돌봄`, {
-		headers: {
-			'Authorization': `Bearer ${userToken}`
-		}
-	});
+  return axios.get(`${baseURL}/matches/category?category=아이돌봄`, {
+    headers: {
+      'Authorization': `Bearer ${userToken}`
+    }
+  });
 };
 
 
 //반려동물 데이터 API
 export const getPetMatches = (userToken) => {
-	return axios.get(`${baseURL}/matches/category?category=반려동물`, {
-		headers: {
-			'Authorization': `Bearer ${userToken}`
-		}
-	});
+  return axios.get(`${baseURL}/matches/category?category=반려동물`, {
+    headers: {
+      'Authorization': `Bearer ${userToken}`
+    }
+  });
 };
 
 //기타 데이터 API
 export const getEtcMatches = (userToken) => {
-	return axios.get(`${baseURL}/matches/category?category=기타`, {
-		headers: {
-			'Authorization': `Bearer ${userToken}`
-		}
-	});
+  return axios.get(`${baseURL}/matches/category?category=기타`, {
+    headers: {
+      'Authorization': `Bearer ${userToken}`
+    }
+  });
 };
 
 //검색 API
@@ -120,14 +126,14 @@ export const postComment = async (matchingId, text, userToken) => {
         },
       }
     );
-    return response.data; 
+    return response.data;
   } catch (error) {
-    throw error; 
+    throw error;
   }
 };
 
 //댓글 목록
-export const getCommentsByMatchId  = async (matchId, page, userToken) => {
+export const getCommentsByMatchId = async (matchId, page, userToken) => {
   try {
     const response = await axios.get(`${baseURL}/match/comments`, {
       params: {
@@ -162,7 +168,7 @@ export const getMyMatchingsPosts = async (page, userToken) => {
   }
 };
 
-//판매상태 변경
+//매칭상태 변경
 export const toggleMatchStatus = async (id, userToken) => {
   try {
     const response = await axios.patch(
@@ -194,7 +200,6 @@ export const deleteCommentById = async (commentId, userToken) => {
     });
 
     if (response.ok) {
-      // 성공적으로 삭제되었을 때의 처리
       // console.log("댓글 삭제 성공");
     } else {
       // 삭제 실패 시의 처리
@@ -247,7 +252,7 @@ export const reportId = async (reportedMatchId, content, userToken, onClose) => 
     const response = await axios.post(`${baseURL}/reports/matches`, requestBody, { headers });
 
     console.log(response.data);
-    onClose(); 
+    onClose();
   } catch (error) {
     console.error(error);
   }
@@ -268,40 +273,63 @@ export const updateProfile = async (nickname, password, userToken) => {
     const response = await axios.patch(`${baseURL}/members`, requestBody, { headers });
 
     console.log(response.data);
-    return response.data; 
+    return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error("프로필 업데이트에 실패했습니다."); 
+    throw new Error("프로필 업데이트에 실패했습니다.");
   }
 };
 
-
-//발신함
-export const checkSentMessages = async (userToken) => {
+//탈퇴하기
+export const outProfile = async (userToken, onClose) => {
   try {
     const headers = {
       Authorization: `Bearer ${userToken}`
     };
 
-    const response = await axios.get(`${baseURL}/messages/sender`, { headers });
+    const response = await axios.delete(`${baseURL}/members`, { headers });
 
     console.log(response.data);
+    onClose();
+    return response.data;
   } catch (error) {
     console.error(error);
+    throw new Error("회원 탈퇴실패.");
   }
 };
 
-//수신함
-export const checkRecieveMessages = async (userToken) => {
+//쪽지함
+export const getLastConversation = async (userToken, currentUser) => {
   try {
     const headers = {
       Authorization: `Bearer ${userToken}`
     };
 
-    const response = await axios.get(`${baseURL}/messages/receiver`, { headers });
+    const sentMessagesResponse = await axios.get(`${baseURL}/messages/sender`, { headers });
+    const lastSentMessage = sentMessagesResponse.data.result.data.messages;
 
-    console.log(response.data);
+    const receivedMessagesResponse = await axios.get(`${baseURL}/messages/receiver`, { headers });
+    const lastReceiveMessage = receivedMessagesResponse.data.result.data.messages;
+
+    // 다른 유저들의 이름 목록을 생성
+    const otherUsers = Array.from(new Set(lastSentMessage.concat(lastReceiveMessage).map(message => message.senderUsername !== currentUser ? message.senderUsername : message.receiverUsername)));
+
+    // 각 유저별로 마지막 대화 찾기
+    const lastConversations = otherUsers.map(username => {
+      const userMessages = lastSentMessage.concat(lastReceiveMessage).filter(message => message.senderUsername === username || message.receiverUsername === username);
+      const lastMessage = userMessages.reduce((prev, curr) => (prev.id > curr.id ? prev : curr));
+      return {
+        username: username,
+        content: lastMessage.content,
+        time: lastMessage.sentAt
+      };
+    });
+
+    // console.log(lastConversations);
+    return lastConversations;
+
   } catch (error) {
     console.error(error);
+    throw new Error("Failed to fetch last conversations.");
   }
 };

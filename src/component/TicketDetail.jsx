@@ -6,11 +6,12 @@ import React, { useState, useEffect } from 'react';
 import COLORS from "../pages/styled/colors";
 import Modal from "./Modal";
 import { getFavoriteMatches } from "../api/api";
-import { toggleFavoriteMatch } from "../api/api";
+import { toggleFavoriteMatch, getMyMatchingsPosts } from "../api/api";
 import { userToken } from "../api/api";
 import { useParams } from 'react-router-dom';
 import { getMatchById } from '../api/api';
 import ReportModal from "./ReportModal";
+import MyModal from "./MyModal";
 
 const Box = styled.div`
 display: flex;
@@ -288,19 +289,20 @@ export default function TicketDetail() {
 	const [showReportModal, setShowReportModal] = useState(false);
 	const [favorites, setFavorites] = useState([]);
 	const [match, setMatch] = useState(null);
+	//내가 쓴 매칭글 여부
+	const [matchingPosts, setMatchingPosts] = useState([]);
+	const [myModal, setMyModal] = useState(false)
 
 
 	const handleModalClick = () => {
 		setShowModal(!showModal);
+		setMyModal(!myModal);
 	};
 
 	const handleReportClick = () => {
 		setShowModal(false)
 		setShowReportModal(true);
 	};
-
-	// console.log(showModal);
-	// console.log(showReportModal);
 
 	//매칭글 정보 API
 	useEffect(() => {
@@ -315,6 +317,21 @@ export default function TicketDetail() {
 
 		fetchMatch();
 	}, [matchingId]);
+
+	// 내가 쓴 매칭글
+	useEffect(() => {
+		const fetchMatchingPosts = async () => {
+			try {
+				const page = 0;
+				const posts = await getMyMatchingsPosts(page, userToken);
+				setMatchingPosts(posts.result.data.matches);
+			} catch (error) {
+				console.error('매칭글 조회 실패:', error);
+			}
+		};
+
+		fetchMatchingPosts();
+	}, []);
 
 
 	// 기존 즐겨찾기 목록
@@ -354,6 +371,11 @@ export default function TicketDetail() {
 		}
 	};
 
+	const ids = matchingPosts.map(post => post.id);
+	const matchingIdNumber = parseInt(matchingId, 10);
+	const hasMatchingId = ids.includes(matchingIdNumber);
+
+
 
 	return (
 
@@ -381,12 +403,17 @@ export default function TicketDetail() {
 									</HeartBox>
 								</ItemInBox>
 
-								{showModal && (
-									<Modal onClose={handleReportClick}/>
-								)}
+								{
+									hasMatchingId===false && showModal && (
+										<Modal onClose={handleReportClick} />
+									) ||
+									hasMatchingId===true && myModal && (
+										<MyModal />
+									)
+								}
 								{showReportModal && (
 									<ModalWrapper>
-										<ReportModal onClose={()=>setShowReportModal(false)}/>
+										<ReportModal onClose={() => setShowReportModal(false)} />
 									</ModalWrapper>
 								)}
 

@@ -8,6 +8,7 @@ import COLORS from "../pages/styled/colors";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { deleteCommentById } from "../api/api";
+import Modal from "./Modal";
 
 const All = styled.div`
 display: flex;
@@ -161,12 +162,33 @@ width: 100%;
 max-height: 30px !important;
 `
 
+const BtnStyled = styled.button`
+background-color: ${COLORS.WHITE};
+border: none;
+`
+
+const ModalWrapper = styled.div`
+position: relative;
+`;
+
+
 export default function TicketComment() {
 	const params = useParams();
 	const matchId = params.id;
 	const [comments, setComments] = useState([]);
+	const [showUModal, setShowUModal] = useState(false);
+	const [showReportModal, setShowReportModal] = useState(false);
 	const [editingCommentId, setEditingCommentId] = useState(null);
 	const [editedCommentContent, setEditedCommentContent] = useState("");
+
+	const handleModalClick = () => {
+		setShowUModal(!showUModal);
+	};
+
+	const handleReportClick = () => {
+		setShowUModal(false)
+		setShowReportModal(true);
+	};
 
 	const handleKeyDown = (e) => {
 		if (e.key === "Enter" && !e.shiftKey) {
@@ -175,6 +197,7 @@ export default function TicketComment() {
 		}
 	};
 
+	// console.log(showUModal)
 	useEffect(() => {
 		const fetchComments = async () => {
 			try {
@@ -230,7 +253,10 @@ export default function TicketComment() {
 			<CommentForm />
 			{comments.map((comment, index) => (
 				<CommentBox key={index}>
-					<Profile alt="profile" src={MyPageSrc} />
+					<BtnStyled onClick={handleModalClick}>
+						<Profile alt="profile" src={MyPageSrc} />
+
+					</BtnStyled>
 					<CinnerBox>
 						<TxtId>{comment.writer}</TxtId>
 						{editingCommentId === comment.id ? (
@@ -268,6 +294,12 @@ export default function TicketComment() {
 					</CinnerBox>
 				</CommentBox>
 			))}
+			{/* {showUModal && (
+				<ModalWrapper>
+					<Modal onClose={handleReportClick} />
+				</ModalWrapper>
+			)} */}
 		</All>
+
 	);
 };
