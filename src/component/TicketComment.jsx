@@ -295,11 +295,11 @@ export default function TicketComment() {
 					</CinnerBox>
 				</CommentBox>
 			))}
-			{showUModal && (
+			{/* {showUModal && (
 				<ModalWrapper>
 					<Modal onClose={handleReportClick} top={"-80px"} left={"-140px"}/>
 				</ModalWrapper>
-			)}
+			)} */}
 		</All>
 
 	);
